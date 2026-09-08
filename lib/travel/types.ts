@@ -1,23 +1,15 @@
-export type TravelIntent =
-  | 'hotel_search'
-  | 'flight_search'
-  | 'activity_search'
-  | 'trip_planning'
-  | 'multi_product_search'
-  | 'comparison'
-  | 'booking'
-  | 'cancellation'
-  | 'general_travel'
-
+export type TravelIntent = 'hotel_search' | 'flight_search' | 'activity_search' | 'trip_planning' | 'multi_product_search' | 'comparison' | 'booking' | 'cancellation' | 'general_travel'
 export type FulfillmentMethod = 'api_booking' | 'hold' | 'redirect' | 'manual'
-export type BookingState = 'searching' | 'price_check' | 'awaiting_payment' | 'payment_confirmed' | 'booking' | 'confirmed' | 'failed' | 'cancelled' | 'manual_review'
-
+export type BookingState = 'draft' | 'awaiting_customer' | 'verifying' | 'price_changed' | 'confirmed' | 'held' | 'pending' | 'manual_fulfillment' | 'failed' | 'cancelled' | 'searching' | 'price_check' | 'awaiting_payment' | 'payment_confirmed' | 'booking' | 'manual_review'
 export interface Price { amount: number; currency: string }
-export interface HotelOffer { id: string; type: 'hotel'; name: string; location: string; stars: number; rating: number; reviewCount: number; image: string; roomType: string; amenities: string[]; cancellation: string; price: Price; pricePerNight: number; provider: string; recommendation: string }
-export interface FlightOffer { id: string; type: 'flight'; airline: string; route: string; departure: string; arrival: string; duration: string; stops: string; baggage: string; price: Price; provider: string }
+export interface ProviderMeta { provider: string; offerId?: string; expiresAt?: string; availability?: 'available' | 'unavailable' | 'unknown'; capabilities?: FulfillmentMethod[]; taxesAndFees?: Price }
+export interface HotelOffer { id: string; type: 'hotel'; name: string; location: string; stars: number; rating: number; reviewCount: number; image: string; roomType: string; amenities: string[]; cancellation: string; price: Price; pricePerNight: number; provider: string; recommendation: string; providerMeta?: ProviderMeta }
+export interface FlightOffer { id: string; type: 'flight'; airline: string; route: string; departure: string; arrival: string; duration: string; stops: string; baggage: string; price: Price; provider: string; providerMeta?: ProviderMeta; segments?: Array<{ origin: string; destination: string; departure: string; arrival: string; carrier?: string }> }
 export interface ActivityOffer { id: string; type: 'activity'; name: string; location: string; rating: number; duration: string; description: string; cancellation: string; image: string; price: Price; provider: string }
 export interface TravelContext { origin?: string; destination?: string; departureDate?: string; returnDate?: string; guests?: number; rooms?: number; nights?: number; budget?: number; currency?: string; hotelStars?: number; tripType?: string; preferences?: string[] }
 export interface ItineraryDay { day: number; city: string; title: string; description: string }
-export interface TravelProvider { searchHotels(request: TravelContext): Promise<HotelOffer[]>; searchFlights(request: TravelContext): Promise<FlightOffer[]>; searchActivities(request: TravelContext): Promise<ActivityOffer[]>; checkAvailability(offerId: string): Promise<{ available: boolean }>; priceCheck(offerId: string): Promise<{ confirmed: boolean; price?: Price }>; createBooking(request: { offerId: string; context: TravelContext }): Promise<{ state: BookingState; reference?: string }> }
+export interface TravelRequest extends TravelContext { passengerCount?: number; cabin?: string; connectionLimit?: number }
+export interface VerificationResult { confirmed: boolean; price?: Price; expiresAt?: string; reason?: string }
+export interface TravelProvider { name: string; capabilities: string[]; searchHotels(request: TravelRequest): Promise<HotelOffer[]>; searchFlights(request: TravelRequest): Promise<FlightOffer[]>; searchActivities(request: TravelRequest): Promise<ActivityOffer[]>; checkAvailability(offerId: string): Promise<{ available: boolean }>; priceCheck(offerId: string): Promise<VerificationResult>; createBooking(request: { offerId: string; context: TravelContext; idempotencyKey?: string }): Promise<{ state: BookingState; reference?: string }> }
 export type TravelResult = { kind: 'hotels'; offers: HotelOffer[] } | { kind: 'flights'; offers: FlightOffer[] } | { kind: 'activities'; offers: ActivityOffer[] } | { kind: 'itinerary'; destination: string; days: ItineraryDay[] } | { kind: 'comparison'; ids: string[] }
-export interface TravelResponse { intent: TravelIntent; context: TravelContext; message: string; result?: TravelResult; missing?: string[] }
+export interface TravelResponse { intent: TravelIntent; context: TravelContext; message: string; result?: TravelResult; missing?: string[]; source?: 'live' | 'mock' | 'unavailable'; providerErrors?: Array<{ provider: string; code: string; message: string }> }

@@ -17,6 +17,8 @@ const activities: ActivityOffer[] = [
 ]
 
 export class MockTravelProvider implements TravelProvider {
+  name = 'BEKA mock provider'
+  capabilities = ['hotel_search', 'flight_search', 'activity_search']
   // Development-only provider. Results are illustrative and never represent live inventory.
   async searchHotels(request: TravelContext) { const max = request.budget ?? Infinity; return romeHotels.filter((hotel) => hotel.price.amount <= max && (!request.hotelStars || hotel.stars >= request.hotelStars)) }
   async searchFlights() { return flights }

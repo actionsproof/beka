@@ -15,6 +15,8 @@ export function detectTravelIntent(input: string): TravelIntent {
 
 export function extractTravelContext(input: string, previous: TravelContext = {}): TravelContext {
   const context = { ...previous }
+  const origin = input.match(/from\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/)
+  if (origin && !context.origin) context.origin = origin[1]
   const destination = input.match(/(?:in|to|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/)
   if (destination && !context.destination) context.destination = destination[1]
   const budget = input.match(/(?:under|below|budget of|less than)\s*[€$£]?\s*([\d,]+)/i)
