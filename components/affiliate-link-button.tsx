@@ -1,7 +1,7 @@
 'use client'
 
 import { ExternalLink, Hotel, Plane, Car, MapPin, Ticket } from 'lucide-react'
-import { generateBookingComLink, getDestinationId } from '@/lib/affiliates/booking-com'
+import { generateAffiliateLink } from '@/lib/affiliates/manager'
 import type { AffiliateLink } from '@/lib/travel/types'
 
 interface AffiliateLinkButtonProps {
@@ -14,39 +14,39 @@ const PRODUCT_ICONS = {
   cars: Car,
   taxis: MapPin,
   attractions: Ticket,
+  tours: Ticket,
+  activities: Ticket,
 }
 
 export default function AffiliateLinkButton({ affiliateLink }: AffiliateLinkButtonProps) {
-  const Icon = PRODUCT_ICONS[affiliateLink.product]
+  const Icon = PRODUCT_ICONS[affiliateLink.product as keyof typeof PRODUCT_ICONS] || Hotel
   
   const handleClick = () => {
-    const destinationId = affiliateLink.destination 
-      ? getDestinationId(affiliateLink.destination) 
-      : undefined
+    const result = generateAffiliateLink(
+      affiliateLink.product as any,
+      {
+        destination: affiliateLink.destination,
+        origin: affiliateLink.origin,
+        checkin: affiliateLink.checkin,
+        checkout: affiliateLink.checkout,
+        departureDate: affiliateLink.departureDate,
+        returnDate: affiliateLink.returnDate,
+        adults: affiliateLink.adults,
+        rooms: affiliateLink.rooms,
+      }
+    )
 
-    const link = generateBookingComLink({
-      product: affiliateLink.product,
-      // Hotels
-      city: affiliateLink.destination,
-      destinationId,
-      checkin: affiliateLink.checkin,
-      checkout: affiliateLink.checkout,
-      adults: affiliateLink.adults,
-      rooms: affiliateLink.rooms,
-      // Flights
-      origin: affiliateLink.origin,
-      destination: affiliateLink.destination,
-      departureDate: affiliateLink.departureDate,
-      returnDate: affiliateLink.returnDate,
-      tripType: affiliateLink.returnDate ? 'round-trip' : 'one-way',
-    })
+    if (!result) {
+      console.error('No affiliate provider available')
+      return
+    }
 
     // Track the click
     fetch('/api/affiliates/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        provider: affiliateLink.provider,
+        provider: result.provider,
         product: affiliateLink.product,
         searchParams: {
           origin: affiliateLink.origin,
@@ -63,8 +63,13 @@ export default function AffiliateLinkButton({ affiliateLink }: AffiliateLinkButt
     }).catch(console.error)
 
     // Open in new tab
-    window.open(link, '_blank')
+    window.open(result.url, '_blank')
   }
+
+  const providerName = affiliateLink.provider
+    .split(/[.-]/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
 
   return (
     <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -77,7 +82,7 @@ export default function AffiliateLinkButton({ affiliateLink }: AffiliateLinkButt
         <ExternalLink className="w-5 h-5" />
       </button>
       <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 text-center">
-        Powered by {affiliateLink.provider} • Secure booking • Best price guarantee
+        Powered by {providerName} • Secure booking • Best price guarantee
       </p>
     </div>
   )

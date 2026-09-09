@@ -5,6 +5,7 @@ import { searchFlights, searchHotels, searchActivities } from '@/lib/travel/regi
 import { travelConfig } from '@/lib/travel/config'
 import { AI_ENABLED, extractTravelIntent as aiExtractIntent } from '@/lib/ai/groq-client'
 import { resolveAirportCode } from '@/lib/travel/airport-codes'
+import { generateAffiliateLink } from '@/lib/affiliates/manager'
 import type { TravelContext, TravelResponse } from '@/lib/travel/types'
 
 export async function POST(request: Request) {
@@ -57,25 +58,35 @@ export async function POST(request: Request) {
           const live = await searchHotels(context)
           const fallback = travelConfig.mockEnabled && live.offers.length === 0 ? await mockTravelProvider.searchHotels(context) : []
           
-          // If no live results, suggest Booking.com affiliate link
+          // If no live results, suggest best affiliate partner
           if (live.offers.length === 0 && fallback.length === 0) {
-            return NextResponse.json({
-              intent: 'hotel_search',
-              context,
-              source: 'affiliate',
-              providerErrors: live.errors,
-              message: `I can help you find hotels ${context.destination ? `in ${context.destination}` : ''}! Click the button below to search on Booking.com, our trusted partner.`,
-              affiliateLink: {
-                provider: 'booking.com',
-                product: 'hotels',
-                text: 'Search Hotels on Booking.com',
-                destination: context.destination,
-                checkin: context.checkIn,
-                checkout: context.checkOut,
-                adults: context.guests,
-                rooms: context.rooms,
-              },
-            } satisfies TravelResponse)
+            const affiliate = generateAffiliateLink('hotels', {
+              destination: context.destination,
+              checkin: context.checkIn,
+              checkout: context.checkOut,
+              adults: context.guests,
+              rooms: context.rooms,
+            })
+
+            if (affiliate) {
+              return NextResponse.json({
+                intent: 'hotel_search',
+                context,
+                source: 'affiliate',
+                providerErrors: live.errors,
+                message: `I can help you find hotels ${context.destination ? `in ${context.destination}` : ''}! Check out our partner ${affiliate.provider} (${affiliate.commission} commission).`,
+                affiliateLink: {
+                  provider: affiliate.provider,
+                  product: 'hotels',
+                  text: `Search Hotels on ${affiliate.provider.charAt(0).toUpperCase() + affiliate.provider.slice(1)}`,
+                  destination: context.destination,
+                  checkin: context.checkIn,
+                  checkout: context.checkOut,
+                  adults: context.guests,
+                  rooms: context.rooms,
+                },
+              } satisfies TravelResponse)
+            }
           }
           
           return NextResponse.json({
@@ -145,20 +156,26 @@ export async function POST(request: Request) {
     if (intent === 'activity_search') { 
       const offers = travelConfig.mockEnabled ? await mockTravelProvider.searchActivities(context) : []
       
-      // If no activities available, suggest Booking.com attractions
+      // If no activities available, suggest best affiliate partner
       if (offers.length === 0) {
-        return NextResponse.json({ 
-          intent, 
-          context, 
-          source: 'affiliate', 
-          message: `I can help you find tours and attractions ${context.destination ? `in ${context.destination}` : ''}! Check out Booking.com for the best experiences.`,
-          affiliateLink: {
-            provider: 'booking.com',
-            product: 'attractions',
-            text: 'Browse Tours & Attractions on Booking.com',
-            destination: context.destination,
-          },
-        } satisfies TravelResponse)
+        const affiliate = generateAffiliateLink('tours', {
+          destination: context.destination,
+        })
+
+        if (affiliate) {
+          return NextResponse.json({ 
+            intent, 
+            context, 
+            source: 'affiliate', 
+            message: `I can help you find tours and attractions ${context.destination ? `in ${context.destination}` : ''}! Check out ${affiliate.provider} (${affiliate.commission} commission).`,
+            affiliateLink: {
+              provider: affiliate.provider as any,
+              product: 'tours',
+              text: `Browse Tours on ${affiliate.provider.charAt(0).toUpperCase() + affiliate.provider.slice(1)}`,
+              destination: context.destination,
+            },
+          } satisfies TravelResponse)
+        }
       }
       
       return NextResponse.json({ intent, context, source: offers.length ? 'mock' : 'unavailable', message: offers.length ? 'These are development-only illustrative experiences.' : 'Activities are not connected yet.', result: { kind: 'activities', offers } } satisfies TravelResponse) 
