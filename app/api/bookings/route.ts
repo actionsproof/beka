@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { bookings } from '@/lib/db/schema'
 import { eq, desc } from 'drizzle-orm'
-import { verify } from 'jose'
+import * as jose from 'jose'
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'your-secret-key')
 
@@ -11,7 +11,7 @@ async function getUserFromToken(request: NextRequest) {
     const token = request.cookies.get('auth-token')?.value
     if (!token) return null
 
-    const { payload } = await verify(token, JWT_SECRET)
+    const { payload } = await jose.jwtVerify(token, JWT_SECRET)
     return payload as { userId: number; email: string }
   } catch {
     return null
