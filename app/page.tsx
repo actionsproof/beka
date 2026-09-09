@@ -339,6 +339,14 @@ export default function Page() {
         if (response.ok) {
           const data = await response.json()
           setRecentConversations(data.conversations || [])
+          
+          // If user has an active conversation, load it
+          if (data.conversations.length > 0 && messages.length === 0) {
+            const latestConversation = data.conversations[0]
+            setCurrentConversationId(latestConversation.id)
+            setMessages(latestConversation.messages || [])
+            setContext(latestConversation.context || {})
+          }
         }
       } catch (error) {
         console.error('Failed to fetch conversations:', error)
@@ -549,11 +557,17 @@ export default function Page() {
                 key={conv.id}
                 type="button"
                 onClick={() => {
-                  // TODO: Load conversation messages
-                  setInput(`Continue: ${conv.title}`)
+                  // Load conversation messages
+                  setCurrentConversationId(conv.id)
+                  setMessages(conv.messages || [])
+                  setContext(conv.context || {})
                   setSidebarOpen(false)
                 }}
-                className="truncate rounded-xl px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+                className={`truncate rounded-xl px-3 py-2 text-left text-sm hover:bg-accent hover:text-foreground ${
+                  currentConversationId === conv.id 
+                    ? 'bg-accent text-foreground font-medium' 
+                    : 'text-muted-foreground'
+                }`}
               >
                 {conv.title}
               </button>
