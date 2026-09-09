@@ -74,7 +74,7 @@ export async function POST(request: Request) {
                 context,
                 source: 'affiliate',
                 providerErrors: live.errors,
-                message: `I can help you find hotels ${context.destination ? `in ${context.destination}` : ''}! Check out our partner ${affiliate.provider} (${affiliate.commission} commission).`,
+                message: `I can help you find the perfect hotel ${context.destination ? `in ${context.destination}` : ''}! Let me connect you with our trusted partner ${affiliate.provider}.`,
                 affiliateLink: {
                   provider: affiliate.provider,
                   product: 'hotels',
@@ -167,7 +167,7 @@ export async function POST(request: Request) {
             intent, 
             context, 
             source: 'affiliate', 
-            message: `I can help you find tours and attractions ${context.destination ? `in ${context.destination}` : ''}! Check out ${affiliate.provider} (${affiliate.commission} commission).`,
+            message: `I can help you find amazing tours and attractions ${context.destination ? `in ${context.destination}` : ''}! Let me connect you with our partner ${affiliate.provider}.`,
             affiliateLink: {
               provider: affiliate.provider as any,
               product: 'tours',
