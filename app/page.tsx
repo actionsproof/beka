@@ -341,8 +341,9 @@ export default function Page() {
           setRecentConversations(data.conversations || [])
           
           // If user has an active conversation, load it
-          if (data.conversations.length > 0 && messages.length === 0) {
+          if (data.conversations.length > 0 && messages.length === 0 && !currentConversationId) {
             const latestConversation = data.conversations[0]
+            console.log('[Loading conversation]', latestConversation.id, latestConversation.messages.length)
             setCurrentConversationId(latestConversation.id)
             setMessages(latestConversation.messages || [])
             setContext(latestConversation.context || {})
@@ -356,6 +357,57 @@ export default function Page() {
       fetchConversations()
     }
   }, [user])
+
+  // Auto-save conversation whenever messages change (debounced)
+  useEffect(() => {
+    if (!user || messages.length === 0) return
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const conversationTitle = currentConversationId
+          ? recentConversations.find(c => c.id === currentConversationId)?.title
+          : messages[0]?.text?.slice(0, 50) || 'New conversation'
+        
+        console.log('[Auto-saving conversation]', {
+          conversationId: currentConversationId,
+          messagesCount: messages.length,
+          title: conversationTitle
+        })
+        
+        const saveResponse = await fetch('/api/conversations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conversationId: currentConversationId,
+            title: conversationTitle,
+            messages: messages,
+            context: context
+          }),
+        })
+        
+        if (saveResponse.ok) {
+          const { conversation } = await saveResponse.json()
+          console.log('[Conversation saved]', conversation.id)
+          
+          if (!currentConversationId) {
+            setCurrentConversationId(conversation.id)
+            setRecentConversations(prev => [conversation, ...prev])
+          } else {
+            // Update the conversation in the list
+            setRecentConversations(prev => 
+              prev.map(c => c.id === conversation.id ? conversation : c)
+            )
+          }
+        } else {
+          console.error('[Save failed]', await saveResponse.text())
+        }
+      } catch (error) {
+        console.error('[Auto-save error]', error)
+      }
+    }, 1000) // Debounce 1 second
+
+    return () => clearTimeout(timeoutId)
+  }, [messages, user, currentConversationId, context])
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -436,35 +488,8 @@ export default function Page() {
       }
       
       setMessages((current) => [...current, assistantMessage])
-
-      // Save conversation to database if user is logged in
-      if (user) {
-        const conversationTitle = messages.length === 0 
-          ? trimmed.slice(0, 50) 
-          : recentConversations.find(c => c.id === currentConversationId)?.title || 'New conversation'
-        
-        const allMessages = [...messages, userMessage, assistantMessage]
-        
-        const saveResponse = await fetch('/api/conversations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            conversationId: currentConversationId,
-            title: conversationTitle,
-            messages: allMessages,
-            context: data.context
-          }),
-        })
-        
-        if (saveResponse.ok) {
-          const { conversation } = await saveResponse.json()
-          if (!currentConversationId) {
-            setCurrentConversationId(conversation.id)
-            setRecentConversations(prev => [conversation, ...prev])
-          }
-        }
-      }
-    } catch {
+    } catch (error) {
+      console.error('AI chat error:', error)
       setMessages((current) => [
         ...current,
         {
