@@ -1,0 +1,134 @@
+{
+  "common": {
+    "back": "Back to BEKA",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "edit": "Edit Profile",
+    "loading": "Loading...",
+    "viewDetails": "View Details",
+    "filter": "Filter"
+  },
+  "nav": {
+    "askBeka": "Ask BEKA",
+    "explore": "Explore",
+    "myTrips": "My trips",
+    "newChat": "New chat",
+    "profileSettings": "Profile & Settings",
+    "myBookings": "My Bookings & Trips",
+    "searchChats": "Search chats",
+    "toggleTheme": "Toggle theme",
+    "hideNav": "Hide navigation",
+    "recentChats": "Recent chats"
+  },
+  "home": {
+    "title": "Where will you go?",
+    "subtitle": "Your AI travel agent for ideas, itineraries, and thoughtfully selected options.",
+    "placeholder": "Where do you want to go?",
+    "attachFile": "Attach a file",
+    "sendMessage": "Send message",
+    "messageLabel": "Message BEKA",
+    "thinking": "BEKA is searching travel options",
+    "disclaimer": "BEKA uses development mock results. Check important travel details before booking.",
+    "travelAI": "Travel AI",
+    "tagline": "Travel, thoughtfully planned.",
+    "mockNotice": "Mock inventory is clearly labelled. BEKA never pretends a result is live.",
+    "suggestions": {
+      "findHotel": "Find a hotel in Rome",
+      "findHotelPrompt": "Find me a 5-star hotel in Rome for 4 nights under €600.",
+      "findFlights": "Find Cairo → Rome flights",
+      "findFlightsPrompt": "Find flights from Cairo to Rome.",
+      "planTrip": "Plan a week in Italy",
+      "planTripPrompt": "Plan a 7-day trip to Italy.",
+      "findActivities": "Find Rome activities",
+      "findActivitiesPrompt": "Find things to do in Rome."
+    }
+  },
+  "profile": {
+    "tabs": {
+      "profile": "Profile",
+      "bookings": "Bookings",
+      "payments": "Payments",
+      "settings": "Settings"
+    },
+    "memberSince": "Member since",
+    "personalInfo": "Personal Information",
+    "fullName": "Full Name",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "preferredCurrency": "Preferred Currency",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us about yourself...",
+    "noBio": "No bio provided",
+    "notProvided": "Not provided",
+    "travelPreferences": "Travel Preferences",
+    "budgetLevel": "Budget Level",
+    "preferredActivities": "Preferred Activities",
+    "recentActivity": "Recent Activity",
+    "changePicture": "Change profile picture",
+    "budget": {
+      "economy": "Economy",
+      "standard": "Standard",
+      "premium": "Premium",
+      "luxury": "Luxury"
+    }
+  },
+  "bookings": {
+    "title": "Your Bookings",
+    "allBookings": "All Bookings",
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "code": "Code",
+    "nights": "nights"
+  },
+  "payments": {
+    "title": "Payment History",
+    "downloadStatement": "Download Statement",
+    "totalSpent": "Total Spent",
+    "pendingPayments": "Pending Payments",
+    "totalBookings": "Total Bookings",
+    "methods": {
+      "creditCard": "Credit Card",
+      "debitCard": "Debit Card",
+      "paypal": "PayPal",
+      "bankTransfer": "Bank Transfer"
+    },
+    "status": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    }
+  },
+  "settings": {
+    "notifications": "Notification Preferences",
+    "emailNotifications": "Email Notifications",
+    "emailDesc": "Receive booking confirmations and updates via email",
+    "pushNotifications": "Push Notifications",
+    "pushDesc": "Get real-time alerts on your device",
+    "smsNotifications": "SMS Notifications",
+    "smsDesc": "Receive text messages for important updates",
+    "accountSettings": "Account Settings",
+    "language": "Language",
+    "currency": "Currency",
+    "dangerZone": "Danger Zone",
+    "changePassword": "Change Password",
+    "deleteAccount": "Delete Account"
+  },
+  "languages": {
+    "en": "English",
+    "ar": "العربية (Arabic)",
+    "fr": "Français (French)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "ru": "Русский (Russian)",
+    "pl": "Polski (Polish)"
+  },
+  "currencies": {
+    "USD": "USD - US Dollar",
+    "EUR": "EUR - Euro",
+    "GBP": "GBP - British Pound",
+    "EGP": "EGP - Egyptian Pound"
+  }
+}

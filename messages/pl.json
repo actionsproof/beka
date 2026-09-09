@@ -1,0 +1,134 @@
+{
+  "common": {
+    "back": "Powrót do BEKA",
+    "save": "Zapisz zmiany",
+    "cancel": "Anuluj",
+    "edit": "Edytuj profil",
+    "loading": "Ładowanie...",
+    "viewDetails": "Zobacz szczegóły",
+    "filter": "Filtruj"
+  },
+  "nav": {
+    "askBeka": "Zapytaj BEKA",
+    "explore": "Eksploruj",
+    "myTrips": "Moje podróże",
+    "newChat": "Nowy czat",
+    "profileSettings": "Profil i ustawienia",
+    "myBookings": "Moje rezerwacje i podróże",
+    "searchChats": "Szukaj w czatach",
+    "toggleTheme": "Przełącz motyw",
+    "hideNav": "Ukryj nawigację",
+    "recentChats": "Ostatnie czaty"
+  },
+  "home": {
+    "title": "Dokąd pojedziesz?",
+    "subtitle": "Twój agent podróży AI do pomysłów, planów podróży i starannie wybranych opcji.",
+    "placeholder": "Dokąd chcesz pojechać?",
+    "attachFile": "Załącz plik",
+    "sendMessage": "Wyślij wiadomość",
+    "messageLabel": "Wiadomość do BEKA",
+    "thinking": "BEKA szuka opcji podróży",
+    "disclaimer": "BEKA używa testowych wyników. Sprawdź ważne szczegóły podróży przed rezerwacją.",
+    "travelAI": "AI podróży",
+    "tagline": "Podróże, starannie zaplanowane.",
+    "mockNotice": "Testowe dane są wyraźnie oznaczone. BEKA nigdy nie udaje, że wynik jest rzeczywisty.",
+    "suggestions": {
+      "findHotel": "Znajdź hotel w Rzymie",
+      "findHotelPrompt": "Znajdź mi 5-gwiazdkowy hotel w Rzymie na 4 noce poniżej 600€.",
+      "findFlights": "Loty Kair → Rzym",
+      "findFlightsPrompt": "Znajdź loty z Kairu do Rzymu.",
+      "planTrip": "Zaplanuj tydzień we Włoszech",
+      "planTripPrompt": "Zaplanuj 7-dniową podróż do Włoch.",
+      "findActivities": "Atrakcje w Rzymie",
+      "findActivitiesPrompt": "Znajdź rzeczy do zrobienia w Rzymie."
+    }
+  },
+  "profile": {
+    "tabs": {
+      "profile": "Profil",
+      "bookings": "Rezerwacje",
+      "payments": "Płatności",
+      "settings": "Ustawienia"
+    },
+    "memberSince": "Członek od",
+    "personalInfo": "Informacje osobiste",
+    "fullName": "Pełne imię i nazwisko",
+    "emailAddress": "Adres e-mail",
+    "phoneNumber": "Numer telefonu",
+    "preferredCurrency": "Preferowana waluta",
+    "bio": "Biografia",
+    "bioPlaceholder": "Opowiedz nam o sobie...",
+    "noBio": "Brak biografii",
+    "notProvided": "Nie podano",
+    "travelPreferences": "Preferencje podróżnicze",
+    "budgetLevel": "Poziom budżetu",
+    "preferredActivities": "Preferowane aktywności",
+    "recentActivity": "Ostatnia aktywność",
+    "changePicture": "Zmień zdjęcie profilowe",
+    "budget": {
+      "economy": "Ekonomiczny",
+      "standard": "Standardowy",
+      "premium": "Premium",
+      "luxury": "Luksusowy"
+    }
+  },
+  "bookings": {
+    "title": "Twoje rezerwacje",
+    "allBookings": "Wszystkie rezerwacje",
+    "confirmed": "Potwierdzone",
+    "pending": "Oczekujące",
+    "completed": "Ukończone",
+    "cancelled": "Anulowane",
+    "code": "Kod",
+    "nights": "noce"
+  },
+  "payments": {
+    "title": "Historia płatności",
+    "downloadStatement": "Pobierz wyciąg",
+    "totalSpent": "Łącznie wydano",
+    "pendingPayments": "Oczekujące płatności",
+    "totalBookings": "Łączne rezerwacje",
+    "methods": {
+      "creditCard": "Karta kredytowa",
+      "debitCard": "Karta debetowa",
+      "paypal": "PayPal",
+      "bankTransfer": "Przelew bankowy"
+    },
+    "status": {
+      "completed": "Ukończone",
+      "pending": "Oczekujące",
+      "failed": "Nieudane",
+      "refunded": "Zwrócone"
+    }
+  },
+  "settings": {
+    "notifications": "Preferencje powiadomień",
+    "emailNotifications": "Powiadomienia e-mail",
+    "emailDesc": "Otrzymuj potwierdzenia rezerwacji i aktualizacje przez e-mail",
+    "pushNotifications": "Powiadomienia push",
+    "pushDesc": "Otrzymuj alerty w czasie rzeczywistym na swoim urządzeniu",
+    "smsNotifications": "Powiadomienia SMS",
+    "smsDesc": "Otrzymuj wiadomości tekstowe o ważnych aktualizacjach",
+    "accountSettings": "Ustawienia konta",
+    "language": "Język",
+    "currency": "Waluta",
+    "dangerZone": "Strefa niebezpieczna",
+    "changePassword": "Zmień hasło",
+    "deleteAccount": "Usuń konto"
+  },
+  "languages": {
+    "en": "English",
+    "ar": "العربية (Arabic)",
+    "fr": "Français (French)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "ru": "Русский (Russian)",
+    "pl": "Polski (Polish)"
+  },
+  "currencies": {
+    "USD": "USD - Dolar amerykański",
+    "EUR": "EUR - Euro",
+    "GBP": "GBP - Funt szterling",
+    "EGP": "EGP - Funt egipski"
+  }
+}

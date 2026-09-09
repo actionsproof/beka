@@ -1,0 +1,134 @@
+{
+  "common": {
+    "back": "Retour à BEKA",
+    "save": "Enregistrer les modifications",
+    "cancel": "Annuler",
+    "edit": "Modifier le profil",
+    "loading": "Chargement...",
+    "viewDetails": "Voir les détails",
+    "filter": "Filtrer"
+  },
+  "nav": {
+    "askBeka": "Demander à BEKA",
+    "explore": "Explorer",
+    "myTrips": "Mes voyages",
+    "newChat": "Nouvelle conversation",
+    "profileSettings": "Profil et paramètres",
+    "myBookings": "Mes réservations et voyages",
+    "searchChats": "Rechercher des conversations",
+    "toggleTheme": "Changer de thème",
+    "hideNav": "Masquer la navigation",
+    "recentChats": "Conversations récentes"
+  },
+  "home": {
+    "title": "Où allez-vous?",
+    "subtitle": "Votre agent de voyage IA pour des idées, des itinéraires et des options soigneusement sélectionnées.",
+    "placeholder": "Où voulez-vous aller?",
+    "attachFile": "Joindre un fichier",
+    "sendMessage": "Envoyer un message",
+    "messageLabel": "Message à BEKA",
+    "thinking": "BEKA recherche des options de voyage",
+    "disclaimer": "BEKA utilise des résultats de développement simulés. Vérifiez les détails importants du voyage avant de réserver.",
+    "travelAI": "IA de voyage",
+    "tagline": "Voyagez, soigneusement planifié.",
+    "mockNotice": "L'inventaire simulé est clairement étiqueté. BEKA ne prétend jamais qu'un résultat est en direct.",
+    "suggestions": {
+      "findHotel": "Trouver un hôtel à Rome",
+      "findHotelPrompt": "Trouvez-moi un hôtel 5 étoiles à Rome pour 4 nuits à moins de 600€.",
+      "findFlights": "Vols Le Caire → Rome",
+      "findFlightsPrompt": "Trouver des vols du Caire à Rome.",
+      "planTrip": "Planifier une semaine en Italie",
+      "planTripPrompt": "Planifier un voyage de 7 jours en Italie.",
+      "findActivities": "Activités à Rome",
+      "findActivitiesPrompt": "Trouver des choses à faire à Rome."
+    }
+  },
+  "profile": {
+    "tabs": {
+      "profile": "Profil",
+      "bookings": "Réservations",
+      "payments": "Paiements",
+      "settings": "Paramètres"
+    },
+    "memberSince": "Membre depuis",
+    "personalInfo": "Informations personnelles",
+    "fullName": "Nom complet",
+    "emailAddress": "Adresse e-mail",
+    "phoneNumber": "Numéro de téléphone",
+    "preferredCurrency": "Devise préférée",
+    "bio": "Biographie",
+    "bioPlaceholder": "Parlez-nous de vous...",
+    "noBio": "Aucune biographie fournie",
+    "notProvided": "Non fourni",
+    "travelPreferences": "Préférences de voyage",
+    "budgetLevel": "Niveau de budget",
+    "preferredActivities": "Activités préférées",
+    "recentActivity": "Activité récente",
+    "changePicture": "Changer la photo de profil",
+    "budget": {
+      "economy": "Économique",
+      "standard": "Standard",
+      "premium": "Premium",
+      "luxury": "Luxe"
+    }
+  },
+  "bookings": {
+    "title": "Vos réservations",
+    "allBookings": "Toutes les réservations",
+    "confirmed": "Confirmé",
+    "pending": "En attente",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "code": "Code",
+    "nights": "nuits"
+  },
+  "payments": {
+    "title": "Historique des paiements",
+    "downloadStatement": "Télécharger le relevé",
+    "totalSpent": "Total dépensé",
+    "pendingPayments": "Paiements en attente",
+    "totalBookings": "Total des réservations",
+    "methods": {
+      "creditCard": "Carte de crédit",
+      "debitCard": "Carte de débit",
+      "paypal": "PayPal",
+      "bankTransfer": "Virement bancaire"
+    },
+    "status": {
+      "completed": "Terminé",
+      "pending": "En attente",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    }
+  },
+  "settings": {
+    "notifications": "Préférences de notification",
+    "emailNotifications": "Notifications par e-mail",
+    "emailDesc": "Recevoir les confirmations de réservation et les mises à jour par e-mail",
+    "pushNotifications": "Notifications push",
+    "pushDesc": "Recevoir des alertes en temps réel sur votre appareil",
+    "smsNotifications": "Notifications SMS",
+    "smsDesc": "Recevoir des SMS pour les mises à jour importantes",
+    "accountSettings": "Paramètres du compte",
+    "language": "Langue",
+    "currency": "Devise",
+    "dangerZone": "Zone dangereuse",
+    "changePassword": "Changer le mot de passe",
+    "deleteAccount": "Supprimer le compte"
+  },
+  "languages": {
+    "en": "English",
+    "ar": "العربية (Arabic)",
+    "fr": "Français (French)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "ru": "Русский (Russian)",
+    "pl": "Polski (Polish)"
+  },
+  "currencies": {
+    "USD": "USD - Dollar américain",
+    "EUR": "EUR - Euro",
+    "GBP": "GBP - Livre sterling",
+    "EGP": "EGP - Livre égyptienne"
+  }
+}

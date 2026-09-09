@@ -1,0 +1,134 @@
+{
+  "common": {
+    "back": "العودة إلى بيكا",
+    "save": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "edit": "تعديل الملف الشخصي",
+    "loading": "جاري التحميل...",
+    "viewDetails": "عرض التفاصيل",
+    "filter": "تصفية"
+  },
+  "nav": {
+    "askBeka": "اسأل بيكا",
+    "explore": "استكشف",
+    "myTrips": "رحلاتي",
+    "newChat": "محادثة جديدة",
+    "profileSettings": "الملف الشخصي والإعدادات",
+    "myBookings": "حجوزاتي ورحلاتي",
+    "searchChats": "البحث في المحادثات",
+    "toggleTheme": "تبديل المظهر",
+    "hideNav": "إخفاء القائمة",
+    "recentChats": "المحادثات الأخيرة"
+  },
+  "home": {
+    "title": "إلى أين ستذهب؟",
+    "subtitle": "وكيل السفر الذكي الخاص بك للأفكار والبرامج والخيارات المدروسة.",
+    "placeholder": "إلى أين تريد الذهاب؟",
+    "attachFile": "إرفاق ملف",
+    "sendMessage": "إرسال رسالة",
+    "messageLabel": "رسالة إلى بيكا",
+    "thinking": "بيكا يبحث عن خيارات السفر",
+    "disclaimer": "يستخدم بيكا نتائج تجريبية. تحقق من تفاصيل السفر المهمة قبل الحجز.",
+    "travelAI": "الذكاء الاصطناعي للسفر",
+    "tagline": "السفر، مخطط بعناية.",
+    "mockNotice": "المخزون التجريبي موضح بوضوح. بيكا لا يدعي أبدًا أن النتيجة حقيقية.",
+    "suggestions": {
+      "findHotel": "ابحث عن فندق في روما",
+      "findHotelPrompt": "ابحث لي عن فندق 5 نجوم في روما لمدة 4 ليالٍ بأقل من 600 يورو.",
+      "findFlights": "رحلات القاهرة → روما",
+      "findFlightsPrompt": "ابحث عن رحلات من القاهرة إلى روما.",
+      "planTrip": "خطط لأسبوع في إيطاليا",
+      "planTripPrompt": "خطط لرحلة 7 أيام إلى إيطاليا.",
+      "findActivities": "أنشطة في روما",
+      "findActivitiesPrompt": "ابحث عن أشياء للقيام بها في روما."
+    }
+  },
+  "profile": {
+    "tabs": {
+      "profile": "الملف الشخصي",
+      "bookings": "الحجوزات",
+      "payments": "المدفوعات",
+      "settings": "الإعدادات"
+    },
+    "memberSince": "عضو منذ",
+    "personalInfo": "المعلومات الشخصية",
+    "fullName": "الاسم الكامل",
+    "emailAddress": "عنوان البريد الإلكتروني",
+    "phoneNumber": "رقم الهاتف",
+    "preferredCurrency": "العملة المفضلة",
+    "bio": "النبذة",
+    "bioPlaceholder": "أخبرنا عن نفسك...",
+    "noBio": "لا توجد نبذة",
+    "notProvided": "غير متوفر",
+    "travelPreferences": "تفضيلات السفر",
+    "budgetLevel": "مستوى الميزانية",
+    "preferredActivities": "الأنشطة المفضلة",
+    "recentActivity": "النشاط الأخير",
+    "changePicture": "تغيير صورة الملف الشخصي",
+    "budget": {
+      "economy": "اقتصادي",
+      "standard": "عادي",
+      "premium": "مميز",
+      "luxury": "فاخر"
+    }
+  },
+  "bookings": {
+    "title": "حجوزاتك",
+    "allBookings": "جميع الحجوزات",
+    "confirmed": "مؤكد",
+    "pending": "قيد الانتظار",
+    "completed": "مكتمل",
+    "cancelled": "ملغي",
+    "code": "الرمز",
+    "nights": "ليالٍ"
+  },
+  "payments": {
+    "title": "سجل المدفوعات",
+    "downloadStatement": "تنزيل الكشف",
+    "totalSpent": "المبلغ الإجمالي",
+    "pendingPayments": "المدفوعات المعلقة",
+    "totalBookings": "إجمالي الحجوزات",
+    "methods": {
+      "creditCard": "بطاقة ائتمان",
+      "debitCard": "بطاقة خصم",
+      "paypal": "باي بال",
+      "bankTransfer": "تحويل بنكي"
+    },
+    "status": {
+      "completed": "مكتمل",
+      "pending": "قيد الانتظار",
+      "failed": "فشل",
+      "refunded": "مسترد"
+    }
+  },
+  "settings": {
+    "notifications": "تفضيلات الإشعارات",
+    "emailNotifications": "إشعارات البريد الإلكتروني",
+    "emailDesc": "تلقي تأكيدات الحجز والتحديثات عبر البريد الإلكتروني",
+    "pushNotifications": "الإشعارات الفورية",
+    "pushDesc": "احصل على تنبيهات فورية على جهازك",
+    "smsNotifications": "إشعارات الرسائل القصيرة",
+    "smsDesc": "تلقي رسائل نصية للتحديثات المهمة",
+    "accountSettings": "إعدادات الحساب",
+    "language": "اللغة",
+    "currency": "العملة",
+    "dangerZone": "منطقة الخطر",
+    "changePassword": "تغيير كلمة المرور",
+    "deleteAccount": "حذف الحساب"
+  },
+  "languages": {
+    "en": "English",
+    "ar": "العربية (Arabic)",
+    "fr": "Français (French)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "ru": "Русский (Russian)",
+    "pl": "Polski (Polish)"
+  },
+  "currencies": {
+    "USD": "USD - دولار أمريكي",
+    "EUR": "EUR - يورو",
+    "GBP": "GBP - جنيه إسترليني",
+    "EGP": "EGP - جنيه مصري"
+  }
+}

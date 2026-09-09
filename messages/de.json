@@ -1,0 +1,134 @@
+{
+  "common": {
+    "back": "Zurück zu BEKA",
+    "save": "Änderungen speichern",
+    "cancel": "Abbrechen",
+    "edit": "Profil bearbeiten",
+    "loading": "Laden...",
+    "viewDetails": "Details anzeigen",
+    "filter": "Filtern"
+  },
+  "nav": {
+    "askBeka": "BEKA fragen",
+    "explore": "Erkunden",
+    "myTrips": "Meine Reisen",
+    "newChat": "Neuer Chat",
+    "profileSettings": "Profil & Einstellungen",
+    "myBookings": "Meine Buchungen & Reisen",
+    "searchChats": "Chats durchsuchen",
+    "toggleTheme": "Design wechseln",
+    "hideNav": "Navigation ausblenden",
+    "recentChats": "Letzte Chats"
+  },
+  "home": {
+    "title": "Wohin möchten Sie reisen?",
+    "subtitle": "Ihr KI-Reiseagent für Ideen, Reisepläne und sorgfältig ausgewählte Optionen.",
+    "placeholder": "Wohin möchten Sie gehen?",
+    "attachFile": "Datei anhängen",
+    "sendMessage": "Nachricht senden",
+    "messageLabel": "Nachricht an BEKA",
+    "thinking": "BEKA sucht nach Reiseoptionen",
+    "disclaimer": "BEKA verwendet Entwicklungs-Mockdaten. Überprüfen Sie wichtige Reisedetails vor der Buchung.",
+    "travelAI": "Reise-KI",
+    "tagline": "Reisen, sorgfältig geplant.",
+    "mockNotice": "Mock-Inventar ist klar gekennzeichnet. BEKA behauptet niemals, dass ein Ergebnis live ist.",
+    "suggestions": {
+      "findHotel": "Hotel in Rom finden",
+      "findHotelPrompt": "Finden Sie mir ein 5-Sterne-Hotel in Rom für 4 Nächte unter 600€.",
+      "findFlights": "Flüge Kairo → Rom",
+      "findFlightsPrompt": "Flüge von Kairo nach Rom finden.",
+      "planTrip": "Eine Woche in Italien planen",
+      "planTripPrompt": "Eine 7-tägige Reise nach Italien planen.",
+      "findActivities": "Aktivitäten in Rom",
+      "findActivitiesPrompt": "Dinge finden, die man in Rom unternehmen kann."
+    }
+  },
+  "profile": {
+    "tabs": {
+      "profile": "Profil",
+      "bookings": "Buchungen",
+      "payments": "Zahlungen",
+      "settings": "Einstellungen"
+    },
+    "memberSince": "Mitglied seit",
+    "personalInfo": "Persönliche Informationen",
+    "fullName": "Vollständiger Name",
+    "emailAddress": "E-Mail-Adresse",
+    "phoneNumber": "Telefonnummer",
+    "preferredCurrency": "Bevorzugte Währung",
+    "bio": "Biografie",
+    "bioPlaceholder": "Erzählen Sie uns von sich...",
+    "noBio": "Keine Biografie vorhanden",
+    "notProvided": "Nicht angegeben",
+    "travelPreferences": "Reisepräferenzen",
+    "budgetLevel": "Budgetniveau",
+    "preferredActivities": "Bevorzugte Aktivitäten",
+    "recentActivity": "Letzte Aktivität",
+    "changePicture": "Profilbild ändern",
+    "budget": {
+      "economy": "Economy",
+      "standard": "Standard",
+      "premium": "Premium",
+      "luxury": "Luxus"
+    }
+  },
+  "bookings": {
+    "title": "Ihre Buchungen",
+    "allBookings": "Alle Buchungen",
+    "confirmed": "Bestätigt",
+    "pending": "Ausstehend",
+    "completed": "Abgeschlossen",
+    "cancelled": "Storniert",
+    "code": "Code",
+    "nights": "Nächte"
+  },
+  "payments": {
+    "title": "Zahlungsverlauf",
+    "downloadStatement": "Kontoauszug herunterladen",
+    "totalSpent": "Gesamtausgaben",
+    "pendingPayments": "Ausstehende Zahlungen",
+    "totalBookings": "Gesamtbuchungen",
+    "methods": {
+      "creditCard": "Kreditkarte",
+      "debitCard": "Debitkarte",
+      "paypal": "PayPal",
+      "bankTransfer": "Banküberweisung"
+    },
+    "status": {
+      "completed": "Abgeschlossen",
+      "pending": "Ausstehend",
+      "failed": "Fehlgeschlagen",
+      "refunded": "Erstattet"
+    }
+  },
+  "settings": {
+    "notifications": "Benachrichtigungseinstellungen",
+    "emailNotifications": "E-Mail-Benachrichtigungen",
+    "emailDesc": "Buchungsbestätigungen und Updates per E-Mail erhalten",
+    "pushNotifications": "Push-Benachrichtigungen",
+    "pushDesc": "Echtzeit-Benachrichtigungen auf Ihrem Gerät erhalten",
+    "smsNotifications": "SMS-Benachrichtigungen",
+    "smsDesc": "Textnachrichten für wichtige Updates erhalten",
+    "accountSettings": "Kontoeinstellungen",
+    "language": "Sprache",
+    "currency": "Währung",
+    "dangerZone": "Gefahrenzone",
+    "changePassword": "Passwort ändern",
+    "deleteAccount": "Konto löschen"
+  },
+  "languages": {
+    "en": "English",
+    "ar": "العربية (Arabic)",
+    "fr": "Français (French)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "ru": "Русский (Russian)",
+    "pl": "Polski (Polish)"
+  },
+  "currencies": {
+    "USD": "USD - US-Dollar",
+    "EUR": "EUR - Euro",
+    "GBP": "GBP - Britisches Pfund",
+    "EGP": "EGP - Ägyptisches Pfund"
+  }
+}

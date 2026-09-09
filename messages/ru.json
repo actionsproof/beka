@@ -1,0 +1,134 @@
+{
+  "common": {
+    "back": "Вернуться к BEKA",
+    "save": "Сохранить изменения",
+    "cancel": "Отмена",
+    "edit": "Редактировать профиль",
+    "loading": "Загрузка...",
+    "viewDetails": "Посмотреть детали",
+    "filter": "Фильтр"
+  },
+  "nav": {
+    "askBeka": "Спросить BEKA",
+    "explore": "Исследовать",
+    "myTrips": "Мои поездки",
+    "newChat": "Новый чат",
+    "profileSettings": "Профиль и настройки",
+    "myBookings": "Мои бронирования и поездки",
+    "searchChats": "Поиск в чатах",
+    "toggleTheme": "Переключить тему",
+    "hideNav": "Скрыть навигацию",
+    "recentChats": "Недавние чаты"
+  },
+  "home": {
+    "title": "Куда вы поедете?",
+    "subtitle": "Ваш AI-туристический агент для идей, маршрутов и тщательно подобранных вариантов.",
+    "placeholder": "Куда вы хотите поехать?",
+    "attachFile": "Прикрепить файл",
+    "sendMessage": "Отправить сообщение",
+    "messageLabel": "Сообщение BEKA",
+    "thinking": "BEKA ищет варианты путешествий",
+    "disclaimer": "BEKA использует тестовые данные. Проверьте важные детали поездки перед бронированием.",
+    "travelAI": "Туристический AI",
+    "tagline": "Путешествия, тщательно спланированные.",
+    "mockNotice": "Тестовые данные четко обозначены. BEKA никогда не притворяется, что результат реален.",
+    "suggestions": {
+      "findHotel": "Найти отель в Риме",
+      "findHotelPrompt": "Найди мне 5-звездочный отель в Риме на 4 ночи менее чем за 600€.",
+      "findFlights": "Рейсы Каир → Рим",
+      "findFlightsPrompt": "Найти рейсы из Каира в Рим.",
+      "planTrip": "Спланировать неделю в Италии",
+      "planTripPrompt": "Спланировать 7-дневную поездку в Италию.",
+      "findActivities": "Развлечения в Риме",
+      "findActivitiesPrompt": "Найти чем заняться в Риме."
+    }
+  },
+  "profile": {
+    "tabs": {
+      "profile": "Профиль",
+      "bookings": "Бронирования",
+      "payments": "Платежи",
+      "settings": "Настройки"
+    },
+    "memberSince": "Участник с",
+    "personalInfo": "Личная информация",
+    "fullName": "Полное имя",
+    "emailAddress": "Адрес электронной почты",
+    "phoneNumber": "Номер телефона",
+    "preferredCurrency": "Предпочитаемая валюта",
+    "bio": "Биография",
+    "bioPlaceholder": "Расскажите о себе...",
+    "noBio": "Биография не указана",
+    "notProvided": "Не указано",
+    "travelPreferences": "Предпочтения в путешествиях",
+    "budgetLevel": "Уровень бюджета",
+    "preferredActivities": "Предпочитаемые занятия",
+    "recentActivity": "Недавняя активность",
+    "changePicture": "Изменить фото профиля",
+    "budget": {
+      "economy": "Эконом",
+      "standard": "Стандарт",
+      "premium": "Премиум",
+      "luxury": "Люкс"
+    }
+  },
+  "bookings": {
+    "title": "Ваши бронирования",
+    "allBookings": "Все бронирования",
+    "confirmed": "Подтверждено",
+    "pending": "Ожидается",
+    "completed": "Завершено",
+    "cancelled": "Отменено",
+    "code": "Код",
+    "nights": "ночей"
+  },
+  "payments": {
+    "title": "История платежей",
+    "downloadStatement": "Скачать выписку",
+    "totalSpent": "Всего потрачено",
+    "pendingPayments": "Ожидающие платежи",
+    "totalBookings": "Всего бронирований",
+    "methods": {
+      "creditCard": "Кредитная карта",
+      "debitCard": "Дебетовая карта",
+      "paypal": "PayPal",
+      "bankTransfer": "Банковский перевод"
+    },
+    "status": {
+      "completed": "Завершено",
+      "pending": "Ожидается",
+      "failed": "Не удалось",
+      "refunded": "Возвращено"
+    }
+  },
+  "settings": {
+    "notifications": "Настройки уведомлений",
+    "emailNotifications": "Email-уведомления",
+    "emailDesc": "Получать подтверждения бронирования и обновления по электронной почте",
+    "pushNotifications": "Push-уведомления",
+    "pushDesc": "Получать оповещения в реальном времени на вашем устройстве",
+    "smsNotifications": "SMS-уведомления",
+    "smsDesc": "Получать текстовые сообщения о важных обновлениях",
+    "accountSettings": "Настройки аккаунта",
+    "language": "Язык",
+    "currency": "Валюта",
+    "dangerZone": "Опасная зона",
+    "changePassword": "Изменить пароль",
+    "deleteAccount": "Удалить аккаунт"
+  },
+  "languages": {
+    "en": "English",
+    "ar": "العربية (Arabic)",
+    "fr": "Français (French)",
+    "de": "Deutsch (German)",
+    "it": "Italiano (Italian)",
+    "ru": "Русский (Russian)",
+    "pl": "Polski (Polish)"
+  },
+  "currencies": {
+    "USD": "USD - Доллар США",
+    "EUR": "EUR - Евро",
+    "GBP": "GBP - Фунт стерлингов",
+    "EGP": "EGP - Египетский фунт"
+  }
+}
