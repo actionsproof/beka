@@ -50,6 +50,8 @@ interface Conversation {
   id: number
   title: string
   updatedAt: string
+  messages?: Message[]
+  context?: TravelContext
 }
 
 const logoUrl =

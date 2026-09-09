@@ -34,7 +34,19 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(conversations.updatedAt))
       .limit(10)
 
-    return NextResponse.json({ conversations: userConversations })
+    // Transform database format to frontend format
+    const transformedConversations = userConversations.map(conv => ({
+      id: conv.id,
+      title: conv.title,
+      updatedAt: conv.updatedAt,
+      messages: (conv.messages as any[]).map((msg: any) => ({
+        role: msg.role,
+        text: msg.content,
+      })),
+      context: conv.travelContext,
+    }))
+
+    return NextResponse.json({ conversations: transformedConversations })
   } catch (error) {
     console.error('Failed to fetch conversations:', error)
     return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 })
@@ -52,19 +64,38 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, messages, context, conversationId } = body
 
+    // Transform frontend messages to database format
+    const dbMessages = messages.map((msg: any) => ({
+      role: msg.role,
+      content: msg.text || msg.content, // Support both formats
+      timestamp: new Date().toISOString(),
+    }))
+
     if (conversationId) {
       // Update existing conversation
       const [updated] = await db
         .update(conversations)
         .set({
-          messages,
-          context,
+          messages: dbMessages,
+          travelContext: context,
           updatedAt: new Date().toISOString(),
         })
         .where(eq(conversations.id, conversationId))
         .returning()
 
-      return NextResponse.json({ conversation: updated })
+      // Transform back to frontend format
+      const frontendMessages = (updated.messages as any[]).map((msg: any) => ({
+        role: msg.role,
+        text: msg.content,
+      }))
+
+      return NextResponse.json({ 
+        conversation: {
+          ...updated,
+          messages: frontendMessages,
+          context: updated.travelContext
+        }
+      })
     } else {
       // Create new conversation
       const [newConversation] = await db
@@ -72,14 +103,26 @@ export async function POST(request: NextRequest) {
         .values({
           userId: user.userId,
           title: title || 'New conversation',
-          messages,
-          context: context || {},
+          messages: dbMessages,
+          travelContext: context || {},
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         })
         .returning()
 
-      return NextResponse.json({ conversation: newConversation })
+      // Transform back to frontend format
+      const frontendMessages = (newConversation.messages as any[]).map((msg: any) => ({
+        role: msg.role,
+        text: msg.content,
+      }))
+
+      return NextResponse.json({ 
+        conversation: {
+          ...newConversation,
+          messages: frontendMessages,
+          context: newConversation.travelContext
+        }
+      })
     }
   } catch (error) {
     console.error('Failed to save conversation:', error)
