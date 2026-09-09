@@ -75,6 +75,37 @@ function Icon({ type }: { type: string }) {
 }
 
 function HotelCard({ offer, onSelect, t }: { offer: HotelOffer; onSelect: (offer: HotelOffer) => void; t: (key: string) => string }) {
+  // Check if this is an affiliate hotel (has deepLink from Booking.com)
+  const isAffiliateOffer = offer.providerMeta?.deepLink
+  
+  const handleClick = async () => {
+    if (isAffiliateOffer) {
+      // Track affiliate click and open Booking.com
+      try {
+        await fetch('/api/affiliate/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            provider: offer.provider,
+            product: 'hotel',
+            hotelName: offer.name,
+            destination: offer.location,
+            price: offer.price.amount,
+            currency: offer.price.currency,
+          }),
+        })
+      } catch (error) {
+        console.error('Failed to track affiliate click:', error)
+      }
+      
+      // Open Booking.com in new tab
+      window.open(offer.providerMeta.deepLink, '_blank')
+    } else {
+      // Open booking modal for direct bookings (Duffel, Wink, etc)
+      onSelect(offer)
+    }
+  }
+
   return (
     <article className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
       <img src={offer.image} alt={`${offer.name} exterior`} className="h-36 w-full object-cover" />
@@ -100,10 +131,10 @@ function HotelCard({ offer, onSelect, t }: { offer: HotelOffer; onSelect: (offer
           </div>
           <button
             type="button"
-            onClick={() => onSelect(offer)}
+            onClick={handleClick}
             className="rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90"
           >
-            {t('common.viewDetails')}
+            {isAffiliateOffer ? 'View on Booking.com' : t('common.viewDetails')}
           </button>
         </div>
       </div>

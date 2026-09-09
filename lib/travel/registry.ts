@@ -4,6 +4,7 @@ import { travelConfig } from './config'
 import { DuffelProvider } from './providers/duffel'
 import { RouteStackProvider } from './providers/routestack'
 import { WinkProvider } from './providers/wink'
+import { bookingComProvider } from './providers/booking-com'
 import { MockTravelProvider } from './mock-provider'
 
 export function enabledProviders(): TravelProvider[] { 
@@ -13,6 +14,9 @@ export function enabledProviders(): TravelProvider[] {
   if (travelConfig.duffel.enabled) providers.push(new DuffelProvider())
   if (travelConfig.routeStack.enabled) providers.push(new RouteStackProvider())
   if (travelConfig.wink.enabled) providers.push(new WinkProvider())
+  
+  // Always add Booking.com (uses affiliate links)
+  providers.push(bookingComProvider)
   
   // Add mock provider last as fallback
   if (travelConfig.mockEnabled) providers.push(new MockTravelProvider())
