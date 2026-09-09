@@ -215,6 +215,22 @@ export function generateAffiliateLink(
       departureDate: params.departureDate,
       returnDate: params.returnDate,
     })
+  } else if (provider.provider === 'expedia') {
+    // Use Expedia-specific generator
+    const { generateExpediaLink } = require('./expedia')
+    url = generateExpediaLink({
+      product: product === 'tours' || product === 'activities' ? 'hotels' : product,
+      city: params.destination,
+      checkin: params.checkin,
+      checkout: params.checkout,
+      adults: params.adults,
+      rooms: params.rooms,
+      origin: params.origin,
+      destination: params.destination,
+      departureDate: params.departureDate,
+      returnDate: params.returnDate,
+      tripType: params.returnDate ? 'round-trip' : 'one-way',
+    })
   } else {
     // Basic URL append for other providers
     // You can enhance this per provider
