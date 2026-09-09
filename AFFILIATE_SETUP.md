@@ -1,14 +1,21 @@
-# 💰 Affiliate Integration Guide
+# 💰 Booking.com Complete Affiliate Integration
 
 ## ✅ What's Implemented
 
-Your BEKA travel app now has **Booking.com affiliate integration** to earn commissions on hotel bookings!
+Your BEKA travel app now has **complete Booking.com affiliate integration** to earn commissions on ALL travel products!
+
+### 🎯 Products Available:
+- ✈️ **Flights** - Earn commission on flight bookings
+- 🏨 **Hotels** - 25-40% commission
+- 🚗 **Car Rentals** - 10-15% commission  
+- 🚕 **Airport Taxis** - Commission on transfers
+- 🎫 **Tours & Attractions** - 8-12% commission
 
 ### How It Works:
-1. User searches for hotels (e.g., "Find me a hotel in Rome")
-2. If no API results available → Show "Search Hotels on Booking.com" button
+1. User searches for any travel product (e.g., "Find me a hotel in Rome" or "Find flights to Paris")
+2. If no API results available → Show "Search on Booking.com" button
 3. User clicks → Redirected to Booking.com with pre-filled search
-4. User books → **You earn 25-40% commission!** 💵
+4. User books → **You earn commission!** 💵
 
 ---
 
@@ -35,10 +42,33 @@ BOOKING_COM_AFFILIATE_URL=https://www.dpbolvw.net/click-101869299-15735418
 ## 🎯 Where Affiliate Links Appear
 
 ### 1. **AI Chat (Automatic)**
+
+**Hotels:**
 ```
 User: "Find me a hotel in Rome"
-Bot: "I can help you find hotels in Rome! Click the button below..."
-[Search Hotels on Booking.com →]
+Bot: "I can help you find hotels in Rome! Click below..."
+[🏨 Search Hotels on Booking.com →]
+```
+
+**Flights:**
+```
+User: "Find flights from Cairo to Paris"
+Bot: "Check out flights on Booking.com..."
+[✈️ Search Flights on Booking.com →]
+```
+
+**Cars:**
+```
+User: "I need to rent a car in Rome"
+Bot: "Browse car rentals on Booking.com..."
+[🚗 Search Car Rentals on Booking.com →]
+```
+
+**Tours & Attractions:**
+```
+User: "What can I do in Rome?"
+Bot: "Check out tours and attractions..."
+[🎫 Browse Tours & Attractions →]
 ```
 
 ### 2. **Standalone Hotel Search Page**
@@ -64,26 +94,19 @@ Columns:
 
 ---
 
-## 💡 Add More Affiliate Partners
+## 💡 Add More Affiliate Partners (Future)
 
-Ready to add cars, tours, and activities? Here's how:
+While Booking.com covers most products, you can add specialized partners:
 
-### 🚗 **Car Rentals (Rentalcars.com)**
-1. Sign up: https://www.rentalcars.com/Affiliates.do
-2. Get your affiliate link
-3. Add to `.env.local`: `RENTALCARS_AFFILIATE_URL=your_link`
-4. Create `lib/affiliates/rentalcars.ts` (copy pattern from booking-com.ts)
-
-### 🎫 **Tours & Activities (GetYourGuide)**
+### 🎫 **GetYourGuide** (Better for Tours)
 1. Sign up: https://partner.getyourguide.com/
-2. Get your partner ID
-3. Add to `.env.local`: `GETYOURGUIDE_PARTNER_ID=your_id`
-4. Create `lib/affiliates/getyourguide.ts`
+2. Higher commission than Booking.com for tours (8-12%)
+3. Better tour selection
 
-### ✈️ **Flights (Skyscanner)**
+### ✈️ **Skyscanner** (Alternative Flights)
 1. Sign up: https://partners.skyscanner.net/
-2. Get API access
-3. Implement similar to booking.com
+2. Compare more airlines
+3. Often cheaper flights
 
 ---
 
@@ -118,17 +141,22 @@ Build a page to show:
 
 ## 💰 Expected Earnings
 
-**Booking.com Commission:** 25-40% per booking
+**ONE BOOKING.COM LINK = ALL PRODUCTS!**
 
-Example:
-- User books €200 hotel → You earn €50-€80
-- 10 bookings/month → €500-€800/month 🎉
+### Commission Rates:
+- 🏨 **Hotels:** 25-40% per booking
+- ✈️ **Flights:** 1-3% per booking
+- 🚗 **Car Rentals:** 10-15% per booking
+- 🎫 **Tours & Attractions:** 8-12% per booking
+- 🚕 **Airport Taxis:** 5-10% per booking
 
-**GetYourGuide Commission:** 8% per booking
+### Monthly Potential (Example):
+- 10 hotel bookings @ €200 avg = **€500-€800**
+- 5 flight bookings @ €400 avg = **€20-€60**
+- 3 car rentals @ €150 avg = **€45-€68**
+- 15 tour bookings @ €80 avg = **€96-€144**
 
-Example:
-- User books €100 tour → You earn €8
-- 20 bookings/month → €160/month
+**Total: €661-€1,072/month from ONE affiliate link!** 🎉
 
 ---
 
