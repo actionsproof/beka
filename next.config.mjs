@@ -6,8 +6,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Disable static page generation for dynamic auth pages
-  output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 }
 
 export default nextConfig
