@@ -56,6 +56,23 @@ export async function POST(request: Request) {
         if (aiResult.intent === 'hotel_search') {
           const live = await searchHotels(context)
           const fallback = travelConfig.mockEnabled && live.offers.length === 0 ? await mockTravelProvider.searchHotels(context) : []
+          
+          // If no live results, suggest Booking.com affiliate link
+          if (live.offers.length === 0 && fallback.length === 0) {
+            return NextResponse.json({
+              intent: 'hotel_search',
+              context,
+              source: 'affiliate',
+              providerErrors: live.errors,
+              message: `I can help you find hotels ${context.destination ? `in ${context.destination}` : ''}! Click the button below to search on Booking.com, our trusted hotel partner.`,
+              affiliateLink: {
+                provider: 'booking.com',
+                text: 'Search Hotels on Booking.com',
+                destination: context.destination,
+              },
+            } satisfies TravelResponse)
+          }
+          
           return NextResponse.json({
             intent: 'hotel_search',
             context,
