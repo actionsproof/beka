@@ -21,7 +21,6 @@ import {
   X,
 } from 'lucide-react'
 import type { HotelOffer, TravelContext, TravelResponse, TravelResult } from '@/lib/travel/types'
-import { mockUser } from '@/lib/user/context'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { LanguageSelector } from '@/components/language-selector'
 import { BookingModal } from '@/components/booking-modal'
@@ -40,30 +39,23 @@ interface Message {
   attachments?: AttachedFile[]
 }
 
+interface UserData {
+  id: number
+  name: string
+  email: string
+  initials: string
+}
+
+interface Conversation {
+  id: number
+  title: string
+  updatedAt: string
+}
+
 const logoUrl =
   'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Black%20and%20Orange%20Simple%20Travel%20Agency%20Logo-IycmdZUw0OtRWItkpg7ao73GHSQsNf.png'
 
-const getStarterChats = (t: (key: string) => string, locale: string) => {
-  if (locale === 'ar') {
-    return ['بحث عن فندق في روما', 'برنامج إيطاليا', 'رحلات القاهرة إلى روما']
-  }
-  if (locale === 'fr') {
-    return ['Recherche hôtel Rome', 'Itinéraire Italie', 'Vols Le Caire Rome']
-  }
-  if (locale === 'de') {
-    return ['Hotelsuche Rom', 'Italien-Reiseplan', 'Flüge Kairo Rom']
-  }
-  if (locale === 'it') {
-    return ['Cerca hotel Roma', 'Itinerario Italia', 'Voli Il Cairo Roma']
-  }
-  if (locale === 'ru') {
-    return ['Поиск отеля в Риме', 'Маршрут по Италии', 'Рейсы Каир-Рим']
-  }
-  if (locale === 'pl') {
-    return ['Szukaj hotelu Rzym', 'Plan Włochy', 'Loty Kair Rzym']
-  }
-  return ['Rome hotel search', 'Italy itinerary', 'Cairo to Rome flights']
-}
+// Removed: fake starter chats - now using real user conversations from database
 
 function getSuggestions(t: (key: string) => string) {
   return [
@@ -265,7 +257,6 @@ export default function Page() {
   const { t, locale } = useTranslation()
   const suggestions = getSuggestions(t)
   const isRTL = locale === 'ar'
-  const starterChats = getStarterChats(t, locale)
   
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -277,6 +268,9 @@ export default function Page() {
   const [bookingConfirmed, setBookingConfirmed] = useState<{ id: number; offer: any } | null>(null)
   const [profileOpen, setProfileOpen] = useState(false)
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([])
+  const [user, setUser] = useState<UserData | null>(null)
+  const [recentConversations, setRecentConversations] = useState<Conversation[]>([])
+  const [currentConversationId, setCurrentConversationId] = useState<number | null>(null)
   const profileRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -289,6 +283,40 @@ export default function Page() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // Fetch current user on mount
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error)
+      }
+    }
+    fetchUser()
+  }, [])
+
+  // Fetch user's recent conversations
+  useEffect(() => {
+    async function fetchConversations() {
+      try {
+        const response = await fetch('/api/conversations')
+        if (response.ok) {
+          const data = await response.json()
+          setRecentConversations(data.conversations || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch conversations:', error)
+      }
+    }
+    if (user) {
+      fetchConversations()
+    }
+  }, [user])
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -356,19 +384,47 @@ export default function Page() {
         body: JSON.stringify({ 
           message: trimmed, 
           context,
-          history // Send full conversation history to AI!
+          history
         }),
       })
       const data = (await response.json()) as TravelResponse
       setContext(data.context ?? context)
-      setMessages((current) => [
-        ...current,
-        {
-          role: 'assistant',
-          text: data.message,
-          result: data.result,
-        },
-      ])
+      
+      const assistantMessage = {
+        role: 'assistant' as const,
+        text: data.message,
+        result: data.result,
+      }
+      
+      setMessages((current) => [...current, assistantMessage])
+
+      // Save conversation to database if user is logged in
+      if (user) {
+        const conversationTitle = messages.length === 0 
+          ? trimmed.slice(0, 50) 
+          : recentConversations.find(c => c.id === currentConversationId)?.title || 'New conversation'
+        
+        const allMessages = [...messages, userMessage, assistantMessage]
+        
+        const saveResponse = await fetch('/api/conversations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conversationId: currentConversationId,
+            title: conversationTitle,
+            messages: allMessages,
+            context: data.context
+          }),
+        })
+        
+        if (saveResponse.ok) {
+          const { conversation } = await saveResponse.json()
+          if (!currentConversationId) {
+            setCurrentConversationId(conversation.id)
+            setRecentConversations(prev => [conversation, ...prev])
+          }
+        }
+      }
     } catch {
       setMessages((current) => [
         ...current,
@@ -423,6 +479,7 @@ export default function Page() {
           onClick={() => {
             setMessages([])
             setContext({})
+            setCurrentConversationId(null)
             setSidebarOpen(false)
           }}
           className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-medium shadow-sm hover:bg-accent"
@@ -451,16 +508,26 @@ export default function Page() {
           <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t('nav.recentChats')}
           </p>
-          {starterChats.map((chat) => (
-            <button
-              key={chat}
-              type="button"
-              onClick={() => setInput(`Continue planning ${chat}`)}
-              className="truncate rounded-xl px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
-            >
-              {chat}
-            </button>
-          ))}
+          {recentConversations.length === 0 ? (
+            <p className="px-3 py-2 text-sm text-muted-foreground/60">
+              {user ? 'No conversations yet' : 'Sign in to see your chats'}
+            </p>
+          ) : (
+            recentConversations.map((conv) => (
+              <button
+                key={conv.id}
+                type="button"
+                onClick={() => {
+                  // TODO: Load conversation messages
+                  setInput(`Continue: ${conv.title}`)
+                  setSidebarOpen(false)
+                }}
+                className="truncate rounded-xl px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+              >
+                {conv.title}
+              </button>
+            ))
+          )}
         </div>
         <div className="mt-auto rounded-2xl border border-border bg-background p-3">
           <p className="text-xs font-semibold">{t('home.tagline')}</p>
@@ -516,33 +583,66 @@ export default function Page() {
                 aria-label="Open user menu"
                 aria-expanded={profileOpen}
               >
-                {mockUser.initials}
+                {user ? user.initials : <User className="size-4" />}
               </button>
               {profileOpen && (
                 <div className={`absolute mt-2 w-48 rounded-xl border border-border bg-card shadow-lg z-50 ${
                   isRTL ? 'right-0' : 'right-0'
                 }`}>
                   <div className="flex flex-col">
-                    <div className="border-b border-border px-4 py-3">
-                      <p className="font-semibold text-sm">{mockUser.name}</p>
-                      <p className="text-xs text-muted-foreground">{mockUser.email}</p>
-                    </div>
-                    <Link
-                      href="/profile"
-                      className="px-4 py-2.5 text-sm font-medium hover:bg-accent flex items-center gap-2 transition-colors border-b border-border"
-                      onClick={() => setProfileOpen(false)}
-                    >
-                      <User className="size-4" />
-                      {t('nav.profileSettings')}
-                    </Link>
-                    <Link
-                      href="/profile?tab=bookings"
-                      className="px-4 py-2.5 text-sm font-medium hover:bg-accent rounded-b-xl flex items-center gap-2 transition-colors"
-                      onClick={() => setProfileOpen(false)}
-                    >
-                      <Compass className="size-4" />
-                      {t('nav.myBookings')}
-                    </Link>
+                    {user ? (
+                      <>
+                        <div className="border-b border-border px-4 py-3">
+                          <p className="font-semibold text-sm">{user.name}</p>
+                          <p className="text-xs text-muted-foreground">{user.email}</p>
+                        </div>
+                        <Link
+                          href="/profile"
+                          className="px-4 py-2.5 text-sm font-medium hover:bg-accent flex items-center gap-2 transition-colors border-b border-border"
+                          onClick={() => setProfileOpen(false)}
+                        >
+                          <User className="size-4" />
+                          {t('nav.profileSettings')}
+                        </Link>
+                        <Link
+                          href="/profile?tab=bookings"
+                          className="px-4 py-2.5 text-sm font-medium hover:bg-accent flex items-center gap-2 transition-colors border-b border-border"
+                          onClick={() => setProfileOpen(false)}
+                        >
+                          <Compass className="size-4" />
+                          {t('nav.myBookings')}
+                        </Link>
+                        <button
+                          onClick={async () => {
+                            await fetch('/api/auth/logout', { method: 'POST' })
+                            setUser(null)
+                            setProfileOpen(false)
+                            setMessages([])
+                            setRecentConversations([])
+                          }}
+                          className="px-4 py-2.5 text-sm font-medium hover:bg-accent rounded-b-xl text-left text-red-600"
+                        >
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          href="/login"
+                          onClick={() => setProfileOpen(false)}
+                          className="px-4 py-2.5 text-sm font-medium hover:bg-accent rounded-t-xl text-left border-b border-border block"
+                        >
+                          Sign In
+                        </Link>
+                        <Link
+                          href="/signup"
+                          onClick={() => setProfileOpen(false)}
+                          className="px-4 py-2.5 text-sm font-medium hover:bg-accent rounded-b-xl text-left block"
+                        >
+                          Sign Up
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </div>
               )}

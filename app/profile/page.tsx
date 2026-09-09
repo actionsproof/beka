@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   ArrowLeft,
   Bell,
@@ -17,23 +18,98 @@ import {
   User,
   Wallet,
   X,
+  Loader2,
 } from 'lucide-react'
-import { mockUser, mockBookings, mockPayments, mockActivities } from '@/lib/user/mockData'
 import type { UserProfile } from '@/lib/user/types'
 
 type TabType = 'profile' | 'bookings' | 'payments' | 'settings'
 
+interface Booking {
+  id: number
+  bookingType: string
+  provider: string
+  bookingDetails: any
+  amount: string
+  currency: string
+  status: string
+  createdAt: string
+}
+
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<TabType>('profile')
-  const [user, setUser] = useState<UserProfile>(mockUser)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const initialTab = (searchParams?.get('tab') as TabType) || 'profile'
+  
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab)
+  const [user, setUser] = useState<any>(null)
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({
-    name: user.name,
-    email: user.email,
-    phone: user.phone || '',
-    bio: user.bio || '',
+    name: '',
+    email: '',
+    phone: '',
+    bio: '',
   })
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Fetch user data on mount
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
+          setEditForm({
+            name: data.user.name || '',
+            email: data.user.email || '',
+            phone: data.user.phone || '',
+            bio: data.user.bio || '',
+          })
+        } else {
+          // Not logged in, redirect to home
+          router.push('/')
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error)
+        router.push('/')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchUser()
+  }, [router])
+
+  // Fetch bookings when bookings tab is active
+  useEffect(() => {
+    async function fetchBookings() {
+      if (activeTab !== 'bookings' || !user) return
+      
+      try {
+        const response = await fetch('/api/bookings')
+        if (response.ok) {
+          const data = await response.json()
+          setBookings(data.bookings || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch bookings:', error)
+      }
+    }
+    fetchBookings()
+  }, [activeTab, user])
+
+  if (loading) {
+    return (
+      <div className="flex min-h-svh items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null
+  }
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -46,27 +122,28 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSave = () => {
-    setUser({
-      ...user,
-      name: editForm.name,
-      email: editForm.email,
-      phone: editForm.phone,
-      bio: editForm.bio,
-      initials: editForm.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2),
-    })
-    setIsEditing(false)
+  const handleSave = async () => {
+    try {
+      const response = await fetch('/api/auth/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setUser(data.user)
+        setIsEditing(false)
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error)
+    }
   }
 
   const handleCancel = () => {
     setEditForm({
-      name: user.name,
-      email: user.email,
+      name: user.name || '',
+      email: user.email || '',
       phone: user.phone || '',
       bio: user.bio || '',
     })
@@ -262,7 +339,7 @@ export default function ProfilePage() {
                   <label className="mb-2 block text-sm font-medium text-muted-foreground">Preferred Currency</label>
                   <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2">
                     <Globe className="size-4 text-muted-foreground" />
-                    <span>{user.preferences.currency}</span>
+                    <span>{user.preferences?.currency || 'EUR'}</span>
                   </div>
                 </div>
 
@@ -288,64 +365,18 @@ export default function ProfilePage() {
             {/* Travel Preferences */}
             <div className="rounded-2xl border border-border bg-card p-6">
               <h2 className="mb-6 text-xl font-bold">Travel Preferences</h2>
-              <div className="grid gap-6 md:grid-cols-2">
-                <div>
-                  <label className="mb-3 block text-sm font-medium text-muted-foreground">Budget Level</label>
-                  <div className="flex gap-2">
-                    {['economy', 'standard', 'premium', 'luxury'].map((level) => (
-                      <button
-                        key={level}
-                        className={`flex-1 rounded-lg border px-3 py-2 text-xs font-semibold capitalize transition-colors ${
-                          user.preferences.travelPreferences.budget === level
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-border bg-background hover:bg-accent'
-                        }`}
-                      >
-                        {level}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-3 block text-sm font-medium text-muted-foreground">Preferred Activities</label>
-                  <div className="flex flex-wrap gap-2">
-                    {user.preferences.travelPreferences.activities.map((activity) => (
-                      <span
-                        key={activity}
-                        className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium capitalize"
-                      >
-                        {activity}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <p className="text-sm text-muted-foreground">
+                Customize your travel preferences to get personalized recommendations
+              </p>
             </div>
 
             {/* Recent Activity */}
             <div className="rounded-2xl border border-border bg-card p-6">
               <h2 className="mb-6 text-xl font-bold">Recent Activity</h2>
               <div className="space-y-3">
-                {mockActivities.slice(0, 5).map((activity) => (
-                  <div key={activity.id} className="flex items-start gap-3 rounded-lg border border-border p-3">
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
-                      <Check className="size-4 text-primary" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold">{activity.title}</p>
-                      <p className="text-sm text-muted-foreground">{activity.description}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {new Date(activity.timestamp).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                <p className="text-center py-8 text-muted-foreground">
+                  Your activity history will appear here
+                </p>
               </div>
             </div>
           </div>
@@ -366,57 +397,69 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {mockBookings.map((booking) => (
-                <article
-                  key={booking.id}
-                  className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
-                >
-                  <img src={booking.image} alt={booking.title} className="h-40 w-full object-cover" />
-                  <div className="p-4">
-                    <div className="mb-3 flex items-start justify-between gap-2">
-                      <div>
-                        <h3 className="font-bold">{booking.title}</h3>
-                        <p className="text-xs text-muted-foreground">{booking.description}</p>
-                      </div>
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-semibold capitalize ${getStatusColor(
-                          booking.status
-                        )}`}
-                      >
-                        {booking.status}
-                      </span>
-                    </div>
+              {bookings.length === 0 ? (
+                <div className="col-span-full py-12 text-center">
+                  <p className="text-muted-foreground">No bookings yet</p>
+                  <Link href="/" className="mt-4 inline-block text-sm text-primary hover:underline">
+                    Start planning your trip
+                  </Link>
+                </div>
+              ) : (
+                bookings.map((booking) => {
+                  const details = booking.bookingDetails || {}
+                  const title = details.name || details.title || `${booking.bookingType} booking`
+                  const image = details.image || 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80'
+                  
+                  return (
+                    <article
+                      key={booking.id}
+                      className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+                    >
+                      <img src={image} alt={title} className="h-40 w-full object-cover" />
+                      <div className="p-4">
+                        <div className="mb-3 flex items-start justify-between gap-2">
+                          <div>
+                            <h3 className="font-bold">{title}</h3>
+                            <p className="text-xs text-muted-foreground capitalize">{booking.bookingType} · {booking.provider}</p>
+                          </div>
+                          <span
+                            className={`rounded-full px-2 py-1 text-xs font-semibold capitalize ${getStatusColor(
+                              booking.status
+                            )}`}
+                          >
+                            {booking.status}
+                          </span>
+                        </div>
 
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="size-4" />
-                        <span>{booking.destination}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Calendar className="size-4" />
-                        <span>
-                          {new Date(booking.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} -{' '}
-                          {new Date(booking.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </span>
-                      </div>
-                    </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Calendar className="size-4" />
+                            <span>
+                              {new Date(booking.createdAt).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                        </div>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                      <div>
-                        <p className="text-lg font-bold">
-                          €{booking.totalAmount.toLocaleString()}
-                        </p>
-                        {booking.confirmationCode && (
-                          <p className="text-xs text-muted-foreground">Code: {booking.confirmationCode}</p>
-                        )}
+                        <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                          <div>
+                            <p className="text-lg font-bold">
+                              {booking.currency} {parseFloat(booking.amount).toLocaleString()}
+                            </p>
+                            <p className="text-xs text-muted-foreground">ID: #{booking.id}</p>
+                          </div>
+                          <button className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90">
+                            View Details
+                          </button>
+                        </div>
                       </div>
-                      <button className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90">
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                    </article>
+                  )
+                })
+              )}
             </div>
           </div>
         )}
@@ -432,47 +475,9 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-3">
-              {mockPayments.map((payment) => {
-                const booking = mockBookings.find((b) => b.id === payment.bookingId)
-                return (
-                  <div
-                    key={payment.id}
-                    className="flex items-center justify-between rounded-2xl border border-border bg-card p-4"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex size-12 items-center justify-center rounded-lg bg-secondary">
-                        <CreditCard className="size-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold">{payment.description}</p>
-                        <div className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">
-                          <span className="capitalize">{payment.method.replace('_', ' ')}</span>
-                          {payment.cardLast4 && <span>••••{payment.cardLast4}</span>}
-                          <span>
-                            {new Date(payment.date).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold">
-                        €{payment.amount.toLocaleString()}
-                      </p>
-                      <span
-                        className={`inline-block rounded-full px-2 py-1 text-xs font-semibold capitalize ${getStatusColor(
-                          payment.status
-                        )}`}
-                      >
-                        {payment.status}
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
+              <p className="text-center py-12 text-muted-foreground">
+                Payment history will be available after you make bookings
+              </p>
             </div>
 
             {/* Payment Summary */}
@@ -480,18 +485,18 @@ export default function ProfilePage() {
               <div className="rounded-2xl border border-border bg-card p-6">
                 <p className="text-sm font-medium text-muted-foreground">Total Spent</p>
                 <p className="mt-2 text-3xl font-bold">
-                  €{mockPayments.filter(p => p.status === 'completed').reduce((sum, p) => sum + p.amount, 0).toLocaleString()}
+                  {user.preferences?.currency || 'EUR'} 0
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-card p-6">
                 <p className="text-sm font-medium text-muted-foreground">Pending Payments</p>
                 <p className="mt-2 text-3xl font-bold">
-                  €{mockPayments.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0).toLocaleString()}
+                  {user.preferences?.currency || 'EUR'} 0
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-card p-6">
                 <p className="text-sm font-medium text-muted-foreground">Total Bookings</p>
-                <p className="mt-2 text-3xl font-bold">{mockBookings.length}</p>
+                <p className="mt-2 text-3xl font-bold">{bookings.length}</p>
               </div>
             </div>
           </div>
@@ -516,20 +521,20 @@ export default function ProfilePage() {
                     onClick={() => setUser({
                       ...user,
                       preferences: {
-                        ...user.preferences,
+                        ...(user.preferences || {}),
                         notifications: {
-                          ...user.preferences.notifications,
-                          email: !user.preferences.notifications.email
+                          ...(user.preferences?.notifications || {}),
+                          email: !(user.preferences?.notifications?.email ?? true)
                         }
                       }
                     })}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
-                      user.preferences.notifications.email ? 'bg-primary' : 'bg-border'
+                      user.preferences?.notifications?.email ?? true ? 'bg-primary' : 'bg-border'
                     }`}
                   >
                     <span
                       className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-                        user.preferences.notifications.email ? 'translate-x-5' : 'translate-x-0.5'
+                        user.preferences?.notifications?.email ?? true ? 'translate-x-5' : 'translate-x-0.5'
                       }`}
                     />
                   </button>
@@ -548,20 +553,20 @@ export default function ProfilePage() {
                     onClick={() => setUser({
                       ...user,
                       preferences: {
-                        ...user.preferences,
+                        ...(user.preferences || {}),
                         notifications: {
-                          ...user.preferences.notifications,
-                          push: !user.preferences.notifications.push
+                          ...(user.preferences?.notifications || {}),
+                          push: !(user.preferences?.notifications?.push ?? true)
                         }
                       }
                     })}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
-                      user.preferences.notifications.push ? 'bg-primary' : 'bg-border'
+                      user.preferences?.notifications?.push ?? true ? 'bg-primary' : 'bg-border'
                     }`}
                   >
                     <span
                       className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-                        user.preferences.notifications.push ? 'translate-x-5' : 'translate-x-0.5'
+                        user.preferences?.notifications?.push ?? true ? 'translate-x-5' : 'translate-x-0.5'
                       }`}
                     />
                   </button>
@@ -580,20 +585,20 @@ export default function ProfilePage() {
                     onClick={() => setUser({
                       ...user,
                       preferences: {
-                        ...user.preferences,
+                        ...(user.preferences || {}),
                         notifications: {
-                          ...user.preferences.notifications,
-                          sms: !user.preferences.notifications.sms
+                          ...(user.preferences?.notifications || {}),
+                          sms: !(user.preferences?.notifications?.sms ?? false)
                         }
                       }
                     })}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
-                      user.preferences.notifications.sms ? 'bg-primary' : 'bg-border'
+                      user.preferences?.notifications?.sms ?? false ? 'bg-primary' : 'bg-border'
                     }`}
                   >
                     <span
                       className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-                        user.preferences.notifications.sms ? 'translate-x-5' : 'translate-x-0.5'
+                        user.preferences?.notifications?.sms ?? false ? 'translate-x-5' : 'translate-x-0.5'
                       }`}
                     />
                   </button>
@@ -608,12 +613,12 @@ export default function ProfilePage() {
                   <label className="mb-2 block text-sm font-medium text-muted-foreground">Language</label>
                   <select 
                     className="w-full rounded-lg border border-border bg-background px-4 py-2 outline-none focus:border-primary"
-                    value={user.preferences.language}
+                    value={user.preferences?.language || 'en'}
                     onChange={(e) => setUser({
                       ...user,
                       preferences: {
-                        ...user.preferences,
-                        language: e.target.value as 'en' | 'ar' | 'fr' | 'de' | 'it' | 'ru' | 'pl'
+                        ...(user.preferences || {}),
+                        language: e.target.value
                       }
                     })}
                   >
@@ -631,12 +636,12 @@ export default function ProfilePage() {
                   <label className="mb-2 block text-sm font-medium text-muted-foreground">Currency</label>
                   <select
                     className="w-full rounded-lg border border-border bg-background px-4 py-2 outline-none focus:border-primary"
-                    value={user.preferences.currency}
+                    value={user.preferences?.currency || 'EUR'}
                     onChange={(e) => setUser({
                       ...user,
                       preferences: {
-                        ...user.preferences,
-                        currency: e.target.value as 'USD' | 'EUR' | 'GBP' | 'EGP'
+                        ...(user.preferences || {}),
+                        currency: e.target.value
                       }
                     })}
                   >
