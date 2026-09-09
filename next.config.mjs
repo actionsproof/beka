@@ -6,6 +6,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Disable static page generation for dynamic auth pages
+  output: 'standalone',
 }
 
 export default nextConfig
