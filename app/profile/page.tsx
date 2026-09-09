@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+
+// Force dynamic rendering - this page requires authentication
+export const dynamic = 'force-dynamic'
 import {
   ArrowLeft,
   Bell,

@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Mail, Lock, User, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 const logoUrl =
   'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Black%20and%20Orange%20Simple%20Travel%20Agency%20Logo-IycmdZUw0OtRWItkpg7ao73GHSQsNf.png'
 
