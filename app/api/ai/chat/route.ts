@@ -144,6 +144,38 @@ export async function POST(request: Request) {
     if (intent === 'hotel_search' || intent === 'multi_product_search') { 
       const live = await searchHotels(context)
       const fallback = travelConfig.mockEnabled && live.offers.length === 0 ? await mockTravelProvider.searchHotels(context) : []
+      
+      // If no live results, suggest best affiliate partner
+      if (live.offers.length === 0 && fallback.length === 0) {
+        const affiliate = generateAffiliateLink('hotels', {
+          destination: context.destination,
+          checkin: context.checkIn,
+          checkout: context.checkOut,
+          adults: context.guests,
+          rooms: context.rooms,
+        })
+
+        if (affiliate) {
+          return NextResponse.json({
+            intent,
+            context,
+            source: 'affiliate',
+            providerErrors: live.errors,
+            message: `I can help you find the perfect hotel ${context.destination ? `in ${context.destination}` : ''}! Let me connect you with our trusted partner ${affiliate.provider}.`,
+            affiliateLink: {
+              provider: affiliate.provider,
+              product: 'hotels',
+              text: `Search Hotels on ${affiliate.provider.charAt(0).toUpperCase() + affiliate.provider.slice(1)}`,
+              destination: context.destination,
+              checkin: context.checkIn,
+              checkout: context.checkOut,
+              adults: context.guests,
+              rooms: context.rooms,
+            },
+          } satisfies TravelResponse)
+        }
+      }
+      
       return NextResponse.json({ intent, context, source: live.offers.length ? 'live' : fallback.length ? 'mock' : 'unavailable', providerErrors: live.errors, message: live.offers.length ? `I found ${live.offers.length} live hotel options.` : fallback.length ? 'Here are development-only illustrative stays. Availability and pricing are not live.' : 'No configured hotel provider returned results.', result: { kind: 'hotels', offers: [...live.offers, ...fallback] } } satisfies TravelResponse) 
     }
     
