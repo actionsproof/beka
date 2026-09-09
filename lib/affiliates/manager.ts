@@ -90,17 +90,17 @@ export function getAffiliateProviders(): AffiliateConfig[] {
   }
 
   // Agoda - Asia specialist
-  if (process.env.AGODA_AFFILIATE_URL && process.env.AGODA_AFFILIATE_URL !== 'your_agoda_link_here') {
+  if (process.env.AGODA_PARTNER_ID && process.env.AGODA_API_KEY) {
     providers.push({
       provider: 'agoda',
-      url: process.env.AGODA_AFFILIATE_URL,
+      url: `https://www.agoda.com/partners/partnersearch.aspx?cid=${process.env.AGODA_PARTNER_ID}`,
       enabled: true,
       products: ['hotels'],
       commission: {
         hotels: '4-7%',
       },
       region: 'asia',
-      priority: 4,
+      priority: 1, // HIGHER priority for Asia! (was 4, now 1)
     })
   }
 
@@ -155,16 +155,23 @@ export function getAffiliateProviders(): AffiliateConfig[] {
 /**
  * Get best affiliate provider for a product
  */
-export function getBestProvider(product: ProductType, region?: string): AffiliateConfig | null {
+export function getBestProvider(product: ProductType, destination?: string): AffiliateConfig | null {
   const providers = getAffiliateProviders()
     .filter(p => p.enabled && p.products.includes(product))
 
-  // Filter by region if specified
-  const regionalProviders = region 
-    ? providers.filter(p => !p.region || p.region === 'global' || p.region === region)
-    : providers
+  // Smart regional routing
+  if (destination && product === 'hotels') {
+    const { isAgodaStrongRegion } = require('./agoda')
+    
+    // Prioritize Agoda for Asian cities
+    if (isAgodaStrongRegion(destination)) {
+      const agoda = providers.find(p => p.provider === 'agoda')
+      if (agoda) return agoda
+    }
+  }
 
-  return regionalProviders[0] || providers[0] || null
+  // Default: return highest priority
+  return providers[0] || null
 }
 
 /**
@@ -191,7 +198,7 @@ export function generateAffiliateLink(
     rooms?: number
   }
 ): { provider: AffiliateProvider; url: string; commission: string } | null {
-  const provider = getBestProvider(product)
+  const provider = getBestProvider(product, params.destination)
   
   if (!provider) {
     return null
@@ -230,6 +237,18 @@ export function generateAffiliateLink(
       departureDate: params.departureDate,
       returnDate: params.returnDate,
       tripType: params.returnDate ? 'round-trip' : 'one-way',
+    })
+  } else if (provider.provider === 'agoda') {
+    // Use Agoda-specific generator
+    const { generateAgodaLink, getAgodaCityId } = require('./agoda')
+    const cityId = params.destination ? getAgodaCityId(params.destination) : undefined
+    url = generateAgodaLink({
+      city: params.destination,
+      cityId,
+      checkin: params.checkin,
+      checkout: params.checkout,
+      adults: params.adults,
+      rooms: params.rooms,
     })
   } else {
     // Basic URL append for other providers
