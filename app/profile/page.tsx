@@ -115,12 +115,30 @@ export default function ProfilePage() {
     return null
   }
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       const reader = new FileReader()
-      reader.onloadend = () => {
-        setUser({ ...user, avatar: reader.result as string })
+      reader.onloadend = async () => {
+        const newAvatar = reader.result as string
+        setUser({ ...user, avatar: newAvatar })
+        
+        // Auto-save avatar
+        try {
+          const response = await fetch('/api/auth/me', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ avatar: newAvatar }),
+          })
+          
+          if (response.ok) {
+            console.log('[Profile] Avatar updated successfully')
+          } else {
+            console.error('[Profile] Failed to save avatar')
+          }
+        } catch (error) {
+          console.error('[Profile] Error saving avatar:', error)
+        }
       }
       reader.readAsDataURL(file)
     }
@@ -138,9 +156,12 @@ export default function ProfilePage() {
         const data = await response.json()
         setUser(data.user)
         setIsEditing(false)
+        console.log('[Profile] Profile updated successfully')
+      } else {
+        console.error('[Profile] Failed to save profile')
       }
     } catch (error) {
-      console.error('Failed to update profile:', error)
+      console.error('[Profile] Error updating profile:', error)
     }
   }
 
@@ -152,6 +173,24 @@ export default function ProfilePage() {
       bio: user.bio || '',
     })
     setIsEditing(false)
+  }
+
+  const savePreferences = async (updatedUser: any) => {
+    try {
+      const response = await fetch('/api/auth/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preferences: updatedUser.preferences }),
+      })
+      
+      if (response.ok) {
+        console.log('[Profile] Preferences saved successfully')
+      } else {
+        console.error('[Profile] Failed to save preferences')
+      }
+    } catch (error) {
+      console.error('[Profile] Error saving preferences:', error)
+    }
   }
 
   const tabs = [
@@ -537,16 +576,20 @@ export default function ProfilePage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setUser({
-                      ...user,
-                      preferences: {
-                        ...(user.preferences || {}),
-                        notifications: {
-                          ...(user.preferences?.notifications || {}),
-                          email: !(user.preferences?.notifications?.email ?? true)
+                    onClick={() => {
+                      const updatedUser = {
+                        ...user,
+                        preferences: {
+                          ...(user.preferences || {}),
+                          notifications: {
+                            ...(user.preferences?.notifications || {}),
+                            email: !(user.preferences?.notifications?.email ?? true)
+                          }
                         }
                       }
-                    })}
+                      setUser(updatedUser)
+                      savePreferences(updatedUser)
+                    }}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
                       user.preferences?.notifications?.email ?? true ? 'bg-primary' : 'bg-border'
                     }`}
@@ -569,16 +612,20 @@ export default function ProfilePage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setUser({
-                      ...user,
-                      preferences: {
-                        ...(user.preferences || {}),
-                        notifications: {
-                          ...(user.preferences?.notifications || {}),
-                          push: !(user.preferences?.notifications?.push ?? true)
+                    onClick={() => {
+                      const updatedUser = {
+                        ...user,
+                        preferences: {
+                          ...(user.preferences || {}),
+                          notifications: {
+                            ...(user.preferences?.notifications || {}),
+                            push: !(user.preferences?.notifications?.push ?? true)
+                          }
                         }
                       }
-                    })}
+                      setUser(updatedUser)
+                      savePreferences(updatedUser)
+                    }}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
                       user.preferences?.notifications?.push ?? true ? 'bg-primary' : 'bg-border'
                     }`}
@@ -601,16 +648,20 @@ export default function ProfilePage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setUser({
-                      ...user,
-                      preferences: {
-                        ...(user.preferences || {}),
-                        notifications: {
-                          ...(user.preferences?.notifications || {}),
-                          sms: !(user.preferences?.notifications?.sms ?? false)
+                    onClick={() => {
+                      const updatedUser = {
+                        ...user,
+                        preferences: {
+                          ...(user.preferences || {}),
+                          notifications: {
+                            ...(user.preferences?.notifications || {}),
+                            sms: !(user.preferences?.notifications?.sms ?? false)
+                          }
                         }
                       }
-                    })}
+                      setUser(updatedUser)
+                      savePreferences(updatedUser)
+                    }}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
                       user.preferences?.notifications?.sms ?? false ? 'bg-primary' : 'bg-border'
                     }`}
@@ -635,14 +686,16 @@ export default function ProfilePage() {
                     value={user.preferences?.language || 'en'}
                     onChange={(e) => {
                       const newLanguage = e.target.value
-                      setUser({
+                      const updatedUser = {
                         ...user,
                         preferences: {
                           ...(user.preferences || {}),
                           language: newLanguage
                         }
-                      })
+                      }
+                      setUser(updatedUser)
                       setLocale(newLanguage as any)
+                      savePreferences(updatedUser)
                     }}
                   >
                     <option value="en">{t('languages.en')}</option>
@@ -660,13 +713,17 @@ export default function ProfilePage() {
                   <select
                     className="w-full rounded-lg border border-border bg-background px-4 py-2 outline-none focus:border-primary"
                     value={user.preferences?.currency || 'EUR'}
-                    onChange={(e) => setUser({
-                      ...user,
-                      preferences: {
-                        ...(user.preferences || {}),
-                        currency: e.target.value
+                    onChange={(e) => {
+                      const updatedUser = {
+                        ...user,
+                        preferences: {
+                          ...(user.preferences || {}),
+                          currency: e.target.value
+                        }
                       }
-                    })}
+                      setUser(updatedUser)
+                      savePreferences(updatedUser)
+                    }}
                   >
                     <option value="USD">{t('currencies.USD')}</option>
                     <option value="EUR">{t('currencies.EUR')}</option>
