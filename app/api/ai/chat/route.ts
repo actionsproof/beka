@@ -23,8 +23,70 @@ export async function POST(request: Request) {
         const aiResult = await aiExtractIntent(message, body.history || [])
         
         console.log('[AI Chat] AI Result:', JSON.stringify(aiResult, null, 2))
+
+        // Check if AI wants to call a tool
+        if (aiResult.toolCall) {
+          const toolName = aiResult.toolCall.name
+          const toolArgs = aiResult.toolCall.arguments
+
+          console.log('[AI Chat] Tool Call:', toolName, toolArgs)
+
+          // Execute the tool
+          if (toolName === 'search_flights') {
+            const context: TravelContext = {
+              origin: toolArgs.origin,
+              destination: toolArgs.destination,
+              departureDate: toolArgs.departureDate,
+              returnDate: toolArgs.returnDate,
+              guests: toolArgs.passengers || 1,
+              cabin: toolArgs.cabinClass || 'economy',
+            }
+
+            console.log('[AI Chat] Searching flights with context:', context)
+
+            const live = await searchFlights(context)
+            
+            return NextResponse.json({
+              intent: 'flight_search',
+              context,
+              source: live.offers.length ? 'live' : 'unavailable',
+              providerErrors: live.errors,
+              message: live.offers.length 
+                ? `I found ${live.offers.length} flight${live.offers.length > 1 ? 's' : ''} from ${context.origin} to ${context.destination}.` 
+                : 'No flights available for these dates. Please try different dates.',
+              result: live.offers.length ? { kind: 'flights', offers: live.offers } : undefined,
+            } satisfies TravelResponse)
+          }
+
+          if (toolName === 'search_hotels') {
+            const context: TravelContext = {
+              destination: toolArgs.destination,
+              checkIn: toolArgs.checkIn,
+              checkOut: toolArgs.checkOut,
+              guests: toolArgs.guests || 2,
+              rooms: toolArgs.rooms || 1,
+              budget: toolArgs.budget,
+              hotelStars: toolArgs.stars,
+            }
+
+            console.log('[AI Chat] Searching hotels with context:', context)
+
+            const live = await searchHotels(context)
+            
+            return NextResponse.json({
+              intent: 'hotel_search',
+              context,
+              source: live.offers.length ? 'live' : 'unavailable',
+              providerErrors: live.errors,
+              message: live.offers.length 
+                ? `I found ${live.offers.length} hotel${live.offers.length > 1 ? 's' : ''} in ${context.destination}.` 
+                : 'No hotels available for these dates. Please try different dates or destinations.',
+              result: live.offers.length ? { kind: 'hotels', offers: live.offers } : undefined,
+            } satisfies TravelResponse)
+          }
+        }
         
-        // Convert AI result to our travel context
+        // Convert AI result to our travel context (for backward compatibility)
         const context: TravelContext = {
           ...body.context,
           origin: aiResult.origin ? resolveAirportCode(aiResult.origin) : body.context?.origin,
