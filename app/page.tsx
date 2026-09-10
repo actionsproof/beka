@@ -545,10 +545,25 @@ export default function Page() {
         </div>
         <button
           type="button"
-          onClick={() => {
+          onClick={async () => {
             setMessages([])
             setContext({})
             setCurrentConversationId(null)
+            
+            // Refetch conversations to ensure we have the latest list
+            if (user) {
+              try {
+                const response = await fetch('/api/conversations')
+                if (response.ok) {
+                  const data = await response.json()
+                  setRecentConversations(data.conversations || [])
+                  console.log('[New Chat] Refreshed conversations:', data.conversations.length)
+                }
+              } catch (error) {
+                console.error('[New Chat] Failed to refresh conversations:', error)
+              }
+            }
+            
             // Only close sidebar on mobile
             if (window.innerWidth < 1024) {
               setSidebarOpen(false)
