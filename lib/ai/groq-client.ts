@@ -77,51 +77,6 @@ const tools = [
       },
     },
   },
-  {
-    type: 'function',
-    function: {
-      name: 'search_hotels',
-      description: 'Search for available hotels in a destination. Use this when user wants to find hotels or accommodations.',
-      parameters: {
-        type: 'object',
-        properties: {
-          destination: {
-            type: 'string',
-            description: 'City or location name',
-          },
-          checkIn: {
-            type: 'string',
-            description: 'Check-in date in YYYY-MM-DD format',
-          },
-          checkOut: {
-            type: 'string',
-            description: 'Check-out date in YYYY-MM-DD format',
-          },
-          guests: {
-            type: 'number',
-            description: 'Number of guests (default: 2)',
-            default: 2,
-          },
-          rooms: {
-            type: 'number',
-            description: 'Number of rooms (default: 1)',
-            default: 1,
-          },
-          budget: {
-            type: 'number',
-            description: 'Maximum budget in EUR (optional)',
-          },
-          stars: {
-            type: 'number',
-            description: 'Minimum star rating 1-5 (optional)',
-            minimum: 1,
-            maximum: 5,
-          },
-        },
-        required: ['destination', 'checkIn', 'checkOut'],
-      },
-    },
-  },
 ] as const
 
 export async function extractTravelIntent(
@@ -132,9 +87,16 @@ export async function extractTravelIntent(
     throw new Error('Groq is not configured')
   }
 
-  const systemPrompt = `You are BEKA, a friendly and helpful AI travel assistant. You're conversational, warm, and understand natural language perfectly.
+  const systemPrompt = `You are BEKA, a friendly and helpful AI travel assistant for flight bookings.
 
-You have access to tools to search for real flights and hotels. Use them when you have enough information.
+IMPORTANT: You can ONLY search for FLIGHTS. Hotels, cars, activities are NOT available yet.
+
+When users ask about hotels/accommodations, politely explain:
+"I can only help with flight bookings at the moment. Hotel search will be available soon! Would you like to search for flights instead?"
+
+You have access to search_flights tool to find real flights via Duffel API.
+
+Use the tool when you have: origin + destination + departure date.
 
 CRITICAL RULES FOR HOTEL SEARCHES:
 1. ALWAYS ask for check-in date if missing - NEVER suggest partner sites without it!
