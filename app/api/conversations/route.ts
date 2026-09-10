@@ -42,6 +42,8 @@ export async function GET(request: NextRequest) {
       messages: (conv.messages as any[]).map((msg: any) => ({
         role: msg.role,
         text: msg.content,
+        result: msg.result,
+        attachments: msg.attachments,
       })),
       context: conv.travelContext,
     }))
@@ -68,6 +70,8 @@ export async function POST(request: NextRequest) {
     const dbMessages = messages.map((msg: any) => ({
       role: msg.role,
       content: msg.text || msg.content, // Support both formats
+      result: msg.result,
+      attachments: msg.attachments,
       timestamp: new Date().toISOString(),
     }))
 
@@ -78,7 +82,7 @@ export async function POST(request: NextRequest) {
         .set({
           messages: dbMessages,
           travelContext: context,
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date(),
         })
         .where(eq(conversations.id, conversationId))
         .returning()
@@ -87,6 +91,8 @@ export async function POST(request: NextRequest) {
       const frontendMessages = (updated.messages as any[]).map((msg: any) => ({
         role: msg.role,
         text: msg.content,
+        result: msg.result,
+        attachments: msg.attachments,
       }))
 
       return NextResponse.json({ 
@@ -105,8 +111,8 @@ export async function POST(request: NextRequest) {
           title: title || 'New conversation',
           messages: dbMessages,
           travelContext: context || {},
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         })
         .returning()
 
@@ -114,6 +120,8 @@ export async function POST(request: NextRequest) {
       const frontendMessages = (newConversation.messages as any[]).map((msg: any) => ({
         role: msg.role,
         text: msg.content,
+        result: msg.result,
+        attachments: msg.attachments,
       }))
 
       return NextResponse.json({ 

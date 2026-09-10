@@ -101,7 +101,7 @@ function HotelCard({ offer, onSelect, t }: { offer: HotelOffer; onSelect: (offer
       }
       
       // Open Booking.com in new tab
-      window.open(offer.providerMeta.deepLink, '_blank')
+      window.open(isAffiliateOffer as string, '_blank')
     } else {
       // Open booking modal for direct bookings (Duffel, Wink, etc)
       onSelect(offer)
@@ -306,6 +306,15 @@ export default function Page() {
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null)
   const profileRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, isThinking])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -359,6 +368,36 @@ export default function Page() {
       fetchConversations()
     }
   }, [user])
+
+  // Load guest conversation from localStorage on mount
+  useEffect(() => {
+    if (!user) {
+      const savedMessages = localStorage.getItem('guest_messages')
+      const savedContext = localStorage.getItem('guest_context')
+      if (savedMessages && messages.length === 0) {
+        try {
+          setMessages(JSON.parse(savedMessages))
+          if (savedContext) setContext(JSON.parse(savedContext))
+        } catch (e) {}
+      }
+    }
+  }, [user, messages.length])
+
+  // Save guest conversation to localStorage
+  useEffect(() => {
+    if (user) {
+      localStorage.removeItem('guest_messages')
+      localStorage.removeItem('guest_context')
+      return
+    }
+    if (messages.length > 0) {
+      localStorage.setItem('guest_messages', JSON.stringify(messages))
+      localStorage.setItem('guest_context', JSON.stringify(context))
+    } else {
+      localStorage.removeItem('guest_messages')
+      localStorage.removeItem('guest_context')
+    }
+  }, [messages, context, user])
 
   // Auto-save conversation whenever messages change (debounced)
   useEffect(() => {
@@ -512,7 +551,7 @@ export default function Page() {
   }
 
   return (
-    <main className={`flex min-h-svh bg-background text-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
+    <main className={`flex h-[100dvh] overflow-hidden bg-background text-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
       <aside
         className={`fixed inset-y-0 z-20 flex w-[280px] flex-col border-border bg-sidebar px-3 py-4 transition-all duration-200 lg:static lg:translate-x-0 ${
           isRTL ? 'right-0 border-l' : 'left-0 border-r'
@@ -745,8 +784,9 @@ export default function Page() {
             </div>
           </div>
         </header>
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 pb-36 pt-10 sm:px-8">
+        <div className="flex min-h-0 flex-1 flex-col relative">
+          <div className="flex-1 overflow-y-auto">
+            <div className="mx-auto flex w-full max-w-4xl flex-col px-4 pb-36 pt-10 sm:px-8">
             {messages.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center pb-10 text-center">
                 <img src={logoUrl} alt="BEKA" className="mb-5 h-28 w-48 object-contain object-top" />
@@ -819,13 +859,13 @@ export default function Page() {
                 )}
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
+        </div>
           <div
-            className={`fixed inset-x-0 bottom-0 bg-gradient-to-t from-background via-background to-transparent px-4 pb-4 pt-10 sm:px-8 ${
-              sidebarCollapsed ? 'lg:left-0 lg:right-0' : isRTL ? 'lg:right-[280px] lg:left-0' : 'lg:left-[280px] lg:right-0'
-            }`}
+            className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background to-transparent px-4 pb-4 pt-10 sm:px-8 pointer-events-none"
           >
-            <form onSubmit={(event) => { event.preventDefault(); sendMessage() }} className="mx-auto max-w-4xl">
+            <form onSubmit={(event) => { event.preventDefault(); sendMessage() }} className="mx-auto max-w-4xl pointer-events-auto">
               <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card shadow-lg shadow-foreground/5 focus-within:border-primary/50">
                 <AttachmentPreview attachments={attachedFiles} onRemove={removeFile} />
                 <div className="flex items-end gap-2 p-2">

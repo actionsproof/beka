@@ -47,6 +47,8 @@ export const conversations = pgTable('conversations', {
     role: 'user' | 'assistant'
     content: string
     timestamp: string
+    result?: any
+    attachments?: any[]
   }>>().notNull().default([]),
   
   // Context & Intent
