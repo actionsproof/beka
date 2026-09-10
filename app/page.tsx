@@ -61,10 +61,10 @@ const logoUrl =
 
 function getSuggestions(t: (key: string) => string) {
   return [
-    { icon: 'sun', title: t('home.suggestions.findHotel'), prompt: t('home.suggestions.findHotelPrompt') },
     { icon: 'plane', title: t('home.suggestions.findFlights'), prompt: t('home.suggestions.findFlightsPrompt') },
-    { icon: 'compass', title: t('home.suggestions.planTrip'), prompt: t('home.suggestions.planTripPrompt') },
-    { icon: 'globe', title: t('home.suggestions.findActivities'), prompt: t('home.suggestions.findActivitiesPrompt') },
+    { icon: 'plane', title: 'Book flight to New York', prompt: 'Find flights from Cairo to New York next month' },
+    { icon: 'plane', title: 'Search round-trip to Tokyo', prompt: 'Find round-trip flights to Tokyo for 2 passengers' },
+    { icon: 'plane', title: 'Find flights to Paris', prompt: 'Search flights from London to Paris tomorrow' },
   ]
 }
 
