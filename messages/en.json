@@ -61,9 +61,11 @@
     "noBio": "No bio provided",
     "notProvided": "Not provided",
     "travelPreferences": "Travel Preferences",
+    "travelPreferencesDesc": "Customize your travel preferences to get personalized recommendations",
     "budgetLevel": "Budget Level",
     "preferredActivities": "Preferred Activities",
     "recentActivity": "Recent Activity",
+    "activityHistory": "Your activity history will appear here",
     "changePicture": "Change profile picture",
     "budget": {
       "economy": "Economy",
@@ -80,7 +82,9 @@
     "completed": "Completed",
     "cancelled": "Cancelled",
     "code": "Code",
-    "nights": "nights"
+    "nights": "nights",
+    "noBookings": "No bookings yet",
+    "startPlanning": "Start planning your trip"
   },
   "payments": {
     "title": "Payment History",
@@ -88,6 +92,7 @@
     "totalSpent": "Total Spent",
     "pendingPayments": "Pending Payments",
     "totalBookings": "Total Bookings",
+    "paymentHistoryDesc": "Payment history will be available after you make bookings",
     "methods": {
       "creditCard": "Credit Card",
       "debitCard": "Debit Card",

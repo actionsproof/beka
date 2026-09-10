@@ -61,9 +61,11 @@
     "noBio": "لا توجد نبذة",
     "notProvided": "غير متوفر",
     "travelPreferences": "تفضيلات السفر",
+    "travelPreferencesDesc": "قم بتخصيص تفضيلات السفر الخاصة بك للحصول على توصيات مخصصة",
     "budgetLevel": "مستوى الميزانية",
     "preferredActivities": "الأنشطة المفضلة",
     "recentActivity": "النشاط الأخير",
+    "activityHistory": "سيظهر سجل نشاطك هنا",
     "changePicture": "تغيير صورة الملف الشخصي",
     "budget": {
       "economy": "اقتصادي",
@@ -80,7 +82,9 @@
     "completed": "مكتمل",
     "cancelled": "ملغي",
     "code": "الرمز",
-    "nights": "ليالٍ"
+    "nights": "ليالٍ",
+    "noBookings": "لا توجد حجوزات بعد",
+    "startPlanning": "ابدأ في التخطيط لرحلتك"
   },
   "payments": {
     "title": "سجل المدفوعات",
@@ -88,6 +92,7 @@
     "totalSpent": "المبلغ الإجمالي",
     "pendingPayments": "المدفوعات المعلقة",
     "totalBookings": "إجمالي الحجوزات",
+    "paymentHistoryDesc": "سيتوفر سجل المدفوعات بعد إجراء الحجوزات",
     "methods": {
       "creditCard": "بطاقة ائتمان",
       "debitCard": "بطاقة خصم",
