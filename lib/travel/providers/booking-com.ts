@@ -45,117 +45,18 @@ export const bookingComProvider: TravelProvider = {
   enabled: true,
 
   async searchHotels(request: TravelRequest): Promise<HotelOffer[]> {
-    // If RapidAPI key is available, use Booking.com API
-    if (RAPIDAPI_KEY && RAPIDAPI_KEY !== 'your_rapidapi_key_here') {
-      try {
-        return await searchHotelsViaRapidAPI(request)
-      } catch (error) {
-        console.error('[Booking.com] RapidAPI search failed:', error)
-      }
+    // Only search if RapidAPI key is configured
+    if (!RAPIDAPI_KEY || RAPIDAPI_KEY === 'your_rapidapi_key_here') {
+      console.log('[Booking.com] RapidAPI key not configured - skipping')
+      return [] // Return empty, don't return mock
     }
 
-    // Fallback: Return mock hotels with affiliate deep links
-    // This demonstrates the UI/UX even without RapidAPI
-    console.log('[Booking.com] Using mock data with affiliate links')
-    
-    const nights = request.nights || 3
-    const checkOut = request.checkOut || new Date(new Date(request.checkIn || Date.now()).getTime() + nights * 86400000).toISOString().split('T')[0]
-    
-    // Generate affiliate deep link for search results
-    const deepLink = generateBookingLink({
-      destination: request.destination || 'Rome',
-      checkin: request.checkIn || new Date(Date.now() + 86400000).toISOString().split('T')[0],
-      checkout: checkOut,
-      adults: request.guests || 2,
-      rooms: request.rooms || 1,
-      currency: request.currency || 'EUR',
-    })
-
-    // Return mock hotels with real affiliate links
-    const mockHotels: HotelOffer[] = [
-      {
-        id: 'booking-mock-1',
-        type: 'hotel',
-        name: 'Grand Hotel Plaza',
-        location: request.destination || 'Rome',
-        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
-        stars: 5,
-        rating: '9.2',
-        roomType: 'Deluxe Room',
-        amenities: ['WiFi', 'Breakfast', 'Pool', 'Spa'],
-        price: {
-          amount: Math.round((request.budget || 400) * 0.8),
-          currency: request.currency || 'EUR',
-        },
-        pricePerNight: Math.round((request.budget || 400) * 0.8 / nights),
-        cancellation: 'Free cancellation',
-        provider: 'booking.com',
-        providerMeta: {
-          provider: 'booking.com',
-          hotelId: 'mock-1',
-          availability: 'available',
-          capabilities: ['redirect'],
-          deepLink: deepLink,
-        },
-      },
-      {
-        id: 'booking-mock-2',
-        type: 'hotel',
-        name: 'Luxury Boutique Hotel',
-        location: request.destination || 'Rome',
-        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=80',
-        stars: 4,
-        rating: '8.8',
-        roomType: 'Superior Room',
-        amenities: ['WiFi', 'Breakfast', 'Gym', 'Bar'],
-        price: {
-          amount: Math.round((request.budget || 400) * 0.6),
-          currency: request.currency || 'EUR',
-        },
-        pricePerNight: Math.round((request.budget || 400) * 0.6 / nights),
-        cancellation: 'Free cancellation',
-        provider: 'booking.com',
-        providerMeta: {
-          provider: 'booking.com',
-          hotelId: 'mock-2',
-          availability: 'available',
-          capabilities: ['redirect'],
-          deepLink: deepLink,
-        },
-      },
-      {
-        id: 'booking-mock-3',
-        type: 'hotel',
-        name: 'City Center Inn',
-        location: request.destination || 'Rome',
-        image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80',
-        stars: 3,
-        rating: '8.5',
-        roomType: 'Standard Room',
-        amenities: ['WiFi', 'Breakfast', '24h Reception'],
-        price: {
-          amount: Math.round((request.budget || 400) * 0.4),
-          currency: request.currency || 'EUR',
-        },
-        pricePerNight: Math.round((request.budget || 400) * 0.4 / nights),
-        cancellation: 'Free cancellation',
-        provider: 'booking.com',
-        providerMeta: {
-          provider: 'booking.com',
-          hotelId: 'mock-3',
-          availability: 'available',
-          capabilities: ['redirect'],
-          deepLink: deepLink,
-        },
-      },
-    ]
-
-    // Filter by budget if specified
-    if (request.budget) {
-      return mockHotels.filter(h => h.price.amount <= request.budget!)
+    try {
+      return await searchHotelsViaRapidAPI(request)
+    } catch (error) {
+      console.error('[Booking.com] RapidAPI search failed:', error)
+      return [] // Return empty on error
     }
-
-    return mockHotels
   },
 
   async searchFlights() {
