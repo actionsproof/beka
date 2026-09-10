@@ -33,29 +33,55 @@ export async function POST(request: Request) {
 
           // Execute the tool
           if (toolName === 'search_flights') {
+            // Resolve airport codes
+            const origin = resolveAirportCode(toolArgs.origin)
+            const destination = resolveAirportCode(toolArgs.destination)
+
+            console.log('[AI Chat] Resolved airports:', { 
+              original: { origin: toolArgs.origin, destination: toolArgs.destination },
+              resolved: { origin, destination }
+            })
+
             const context: TravelContext = {
-              origin: toolArgs.origin,
-              destination: toolArgs.destination,
+              origin,
+              destination,
               departureDate: toolArgs.departureDate,
               returnDate: toolArgs.returnDate,
               guests: toolArgs.passengers || 1,
+              passengerCount: toolArgs.passengers || 1,
               cabin: toolArgs.cabinClass || 'economy',
             }
 
             console.log('[AI Chat] Searching flights with context:', context)
 
-            const live = await searchFlights(context)
-            
-            return NextResponse.json({
-              intent: 'flight_search',
-              context,
-              source: live.offers.length ? 'live' : 'unavailable',
-              providerErrors: live.errors,
-              message: live.offers.length 
-                ? `I found ${live.offers.length} flight${live.offers.length > 1 ? 's' : ''} from ${context.origin} to ${context.destination}.` 
-                : 'No flights available for these dates. Please try different dates.',
-              result: live.offers.length ? { kind: 'flights', offers: live.offers } : undefined,
-            } satisfies TravelResponse)
+            try {
+              const live = await searchFlights(context)
+              
+              console.log('[AI Chat] Flight results:', {
+                count: live.offers.length,
+                errors: live.errors
+              })
+              
+              return NextResponse.json({
+                intent: 'flight_search',
+                context,
+                source: live.offers.length ? 'live' : 'unavailable',
+                providerErrors: live.errors,
+                message: live.offers.length 
+                  ? `I found ${live.offers.length} flight${live.offers.length > 1 ? 's' : ''} from ${origin} to ${destination}.` 
+                  : `I couldn't find any flights from ${origin} to ${destination} for those dates. ${live.errors.length > 0 ? 'Error: ' + live.errors.map(e => e.message).join(', ') : 'Try different dates or routes.'}`,
+                result: live.offers.length ? { kind: 'flights', offers: live.offers } : undefined,
+              } satisfies TravelResponse)
+            } catch (error) {
+              console.error('[AI Chat] Flight search error:', error)
+              return NextResponse.json({
+                intent: 'flight_search',
+                context,
+                source: 'unavailable',
+                message: 'Flight search failed. Please try again.',
+                providerErrors: [{ provider: 'system', code: 'ERROR', message: String(error) }],
+              } satisfies TravelResponse)
+            }
           }
 
           if (toolName === 'search_hotels') {
@@ -71,18 +97,43 @@ export async function POST(request: Request) {
 
             console.log('[AI Chat] Searching hotels with context:', context)
 
-            const live = await searchHotels(context)
-            
-            return NextResponse.json({
-              intent: 'hotel_search',
-              context,
-              source: live.offers.length ? 'live' : 'unavailable',
-              providerErrors: live.errors,
-              message: live.offers.length 
-                ? `I found ${live.offers.length} hotel${live.offers.length > 1 ? 's' : ''} in ${context.destination}.` 
-                : 'No hotels available for these dates. Please try different dates or destinations.',
-              result: live.offers.length ? { kind: 'hotels', offers: live.offers } : undefined,
-            } satisfies TravelResponse)
+            try {
+              const live = await searchHotels(context)
+              
+              console.log('[AI Chat] Hotel results:', {
+                count: live.offers.length,
+                errors: live.errors,
+                providers: live.offers.map(o => o.provider)
+              })
+              
+              // Filter out mock results
+              const realOffers = live.offers.filter(offer => 
+                offer.provider !== 'BEKA mock provider' && 
+                offer.provider !== 'booking.com' // Booking.com returns mock without RapidAPI key
+              )
+              
+              console.log('[AI Chat] Real hotel offers:', realOffers.length)
+              
+              return NextResponse.json({
+                intent: 'hotel_search',
+                context,
+                source: realOffers.length ? 'live' : 'unavailable',
+                providerErrors: live.errors,
+                message: realOffers.length 
+                  ? `I found ${realOffers.length} hotel${realOffers.length > 1 ? 's' : ''} in ${context.destination}.` 
+                  : `I couldn't find any hotels in ${context.destination} for those dates. ${live.errors.length > 0 ? 'Error: ' + live.errors.map(e => e.message).join(', ') : 'Try different dates or destinations.'}`,
+                result: realOffers.length ? { kind: 'hotels', offers: realOffers } : undefined,
+              } satisfies TravelResponse)
+            } catch (error) {
+              console.error('[AI Chat] Hotel search error:', error)
+              return NextResponse.json({
+                intent: 'hotel_search',
+                context,
+                source: 'unavailable',
+                message: 'Hotel search failed. Please try again.',
+                providerErrors: [{ provider: 'system', code: 'ERROR', message: String(error) }],
+              } satisfies TravelResponse)
+            }
           }
         }
         
