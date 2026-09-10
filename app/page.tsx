@@ -532,7 +532,10 @@ export default function Page() {
           <button
             type="button"
             onClick={() => {
+              // On mobile: close sidebar
+              // On desktop: collapse sidebar
               setSidebarOpen(false)
+              setSidebarCollapsed(true)
             }}
             className="rounded-lg p-2 text-muted-foreground hover:bg-accent"
             aria-label={t('nav.hideNav')}
@@ -546,7 +549,10 @@ export default function Page() {
             setMessages([])
             setContext({})
             setCurrentConversationId(null)
-            setSidebarOpen(false)
+            // Only close sidebar on mobile
+            if (window.innerWidth < 1024) {
+              setSidebarOpen(false)
+            }
           }}
           className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-medium shadow-sm hover:bg-accent"
         >
@@ -588,7 +594,10 @@ export default function Page() {
                   setCurrentConversationId(conv.id)
                   setMessages(conv.messages || [])
                   setContext(conv.context || {})
-                  setSidebarOpen(false)
+                  // Only close sidebar on mobile
+                  if (window.innerWidth < 1024) {
+                    setSidebarOpen(false)
+                  }
                 }}
                 className={`truncate rounded-xl px-3 py-2 text-left text-sm hover:bg-accent hover:text-foreground ${
                   currentConversationId === conv.id 
