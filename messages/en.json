@@ -28,7 +28,7 @@
     "sendMessage": "Send message",
     "messageLabel": "Message BEKA",
     "thinking": "BEKA is searching travel options",
-    "disclaimer": "BEKA uses development mock results. Check important travel details before booking.",
+    "disclaimer": "BEKA uses live flight data. Always verify travel details before booking.",
     "travelAI": "Travel AI",
     "tagline": "Travel, thoughtfully planned.",
     "mockNotice": "Mock inventory is clearly labelled. BEKA never pretends a result is live.",

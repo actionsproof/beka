@@ -28,7 +28,7 @@
     "sendMessage": "Envoyer un message",
     "messageLabel": "Message à BEKA",
     "thinking": "BEKA recherche des options de voyage",
-    "disclaimer": "BEKA utilise des résultats de développement simulés. Vérifiez les détails importants du voyage avant de réserver.",
+    "disclaimer": "BEKA utilise des données de vol en direct. Vérifiez toujours les détails du voyage avant de réserver.",
     "travelAI": "IA de voyage",
     "tagline": "Voyagez, soigneusement planifié.",
     "mockNotice": "L'inventaire simulé est clairement étiqueté. BEKA ne prétend jamais qu'un résultat est en direct.",

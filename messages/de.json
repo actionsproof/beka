@@ -28,7 +28,7 @@
     "sendMessage": "Nachricht senden",
     "messageLabel": "Nachricht an BEKA",
     "thinking": "BEKA sucht nach Reiseoptionen",
-    "disclaimer": "BEKA verwendet Entwicklungs-Mockdaten. Überprüfen Sie wichtige Reisedetails vor der Buchung.",
+    "disclaimer": "BEKA verwendet Live-Flugdaten. Überprüfen Sie immer die Reisedetails vor der Buchung.",
     "travelAI": "Reise-KI",
     "tagline": "Reisen, sorgfältig geplant.",
     "mockNotice": "Mock-Inventar ist klar gekennzeichnet. BEKA behauptet niemals, dass ein Ergebnis live ist.",
