@@ -70,9 +70,25 @@ export async function POST(request: Request) {
     // Don't send password hash back
     const { passwordHash: _, ...userWithoutPassword } = newUser
 
+    // Transform flat DB structure to nested preferences for frontend
+    const transformedUser = {
+      ...userWithoutPassword,
+      preferences: {
+        language: newUser.language,
+        currency: newUser.currency,
+        notifications: {
+          email: newUser.emailNotifications,
+          push: newUser.pushNotifications,
+          sms: newUser.smsNotifications,
+        },
+        budgetLevel: newUser.budgetLevel,
+        preferredActivities: newUser.preferredActivities,
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      user: userWithoutPassword,
+      user: transformedUser,
       message: 'Account created successfully',
     })
   } catch (error) {

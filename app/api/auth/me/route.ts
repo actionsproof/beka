@@ -41,9 +41,25 @@ export async function GET(request: Request) {
     // Don't send password hash
     const { passwordHash: _, ...userWithoutPassword } = user
 
+    // Transform flat DB structure to nested preferences for frontend
+    const transformedUser = {
+      ...userWithoutPassword,
+      preferences: {
+        language: user.language,
+        currency: user.currency,
+        notifications: {
+          email: user.emailNotifications,
+          push: user.pushNotifications,
+          sms: user.smsNotifications,
+        },
+        budgetLevel: user.budgetLevel,
+        preferredActivities: user.preferredActivities,
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      user: userWithoutPassword,
+      user: transformedUser,
     })
   } catch (error) {
     console.error('[Auth Me] Error:', error)
@@ -74,14 +90,28 @@ export async function PATCH(request: Request) {
     const body = await request.json()
     const { name, email, phone, bio, avatar, preferences } = body
 
-    // Build update object
+    // Build update object - map nested preferences to flat DB columns
     const updateData: any = {}
     if (name !== undefined) updateData.name = name
     if (email !== undefined) updateData.email = email
     if (phone !== undefined) updateData.phone = phone
     if (bio !== undefined) updateData.bio = bio
     if (avatar !== undefined) updateData.avatar = avatar
-    if (preferences !== undefined) updateData.preferences = preferences
+    
+    // Map nested preferences to flat columns
+    if (preferences) {
+      if (preferences.language !== undefined) updateData.language = preferences.language
+      if (preferences.currency !== undefined) updateData.currency = preferences.currency
+      if (preferences.budgetLevel !== undefined) updateData.budgetLevel = preferences.budgetLevel
+      if (preferences.preferredActivities !== undefined) updateData.preferredActivities = preferences.preferredActivities
+      
+      // Handle nested notifications
+      if (preferences.notifications) {
+        if (preferences.notifications.email !== undefined) updateData.emailNotifications = preferences.notifications.email
+        if (preferences.notifications.push !== undefined) updateData.pushNotifications = preferences.notifications.push
+        if (preferences.notifications.sms !== undefined) updateData.smsNotifications = preferences.notifications.sms
+      }
+    }
 
     console.log('[Profile Update]', { userId, updateData })
 
@@ -102,9 +132,25 @@ export async function PATCH(request: Request) {
     // Don't send password hash
     const { passwordHash: _, ...userWithoutPassword } = updatedUser
 
+    // Transform flat DB structure to nested preferences for frontend
+    const transformedUser = {
+      ...userWithoutPassword,
+      preferences: {
+        language: updatedUser.language,
+        currency: updatedUser.currency,
+        notifications: {
+          email: updatedUser.emailNotifications,
+          push: updatedUser.pushNotifications,
+          sms: updatedUser.smsNotifications,
+        },
+        budgetLevel: updatedUser.budgetLevel,
+        preferredActivities: updatedUser.preferredActivities,
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      user: userWithoutPassword,
+      user: transformedUser,
     })
   } catch (error) {
     console.error('[Profile Update] Error:', error)
