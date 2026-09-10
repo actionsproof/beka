@@ -21,6 +21,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import type { UserProfile } from '@/lib/user/types'
+import { useI18n } from '@/lib/i18n'
 
 type TabType = 'profile' | 'bookings' | 'payments' | 'settings'
 
@@ -39,6 +40,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const initialTab = (searchParams?.get('tab') as TabType) || 'profile'
+  const { setLocale } = useI18n()
   
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
   const [user, setUser] = useState<any>(null)
@@ -614,13 +616,17 @@ export default function ProfilePage() {
                   <select 
                     className="w-full rounded-lg border border-border bg-background px-4 py-2 outline-none focus:border-primary"
                     value={user.preferences?.language || 'en'}
-                    onChange={(e) => setUser({
-                      ...user,
-                      preferences: {
-                        ...(user.preferences || {}),
-                        language: e.target.value
-                      }
-                    })}
+                    onChange={(e) => {
+                      const newLanguage = e.target.value
+                      setUser({
+                        ...user,
+                        preferences: {
+                          ...(user.preferences || {}),
+                          language: newLanguage
+                        }
+                      })
+                      setLocale(newLanguage as any)
+                    }}
                   >
                     <option value="en">English</option>
                     <option value="ar">العربية (Arabic)</option>
