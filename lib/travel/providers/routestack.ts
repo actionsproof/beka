@@ -7,6 +7,9 @@ export class RouteStackProvider implements TravelProvider {
   capabilities = ['flight_search', 'hotel_search'] as const
 
   private async makeRequest(endpoint: string, body: any) {
+    console.log('[RouteStack] Making request to:', `${travelConfig.routeStack.apiUrl}${endpoint}`)
+    console.log('[RouteStack] With body:', JSON.stringify(body, null, 2))
+    
     const response = await fetch(`${travelConfig.routeStack.apiUrl}${endpoint}`, {
       method: 'POST',
       headers: {
@@ -17,11 +20,18 @@ export class RouteStackProvider implements TravelProvider {
       signal: AbortSignal.timeout(travelConfig.timeoutMs),
     })
 
+    console.log('[RouteStack] Response status:', response.status)
+
     if (!response.ok) {
-      throw new Error(`RouteStack API error: ${response.status} ${response.statusText}`)
+      const errorText = await response.text()
+      console.error('[RouteStack] API error response:', errorText)
+      throw new Error(`RouteStack API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    return response.json()
+    const data = await response.json()
+    console.log('[RouteStack] Response data:', JSON.stringify(data, null, 2))
+    
+    return data
   }
 
   async searchFlights(request: TravelRequest): Promise<FlightOffer[]> {
@@ -58,20 +68,27 @@ export class RouteStackProvider implements TravelProvider {
   }
 
   async searchHotels(request: TravelRequest): Promise<HotelOffer[]> {
+    console.log('[RouteStack] Searching hotels with request:', request)
+    
     try {
       const body = {
         location: request.destination,
         check_in: request.checkIn,
         check_out: request.checkOut,
-        guests: request.adults || 1,
+        guests: request.adults || request.guests || 1,
         rooms: request.rooms || 1,
       }
 
+      console.log('[RouteStack] Request body:', JSON.stringify(body, null, 2))
+
       const data = await this.makeRequest('/v1/hotels/search', body)
 
+      console.log('[RouteStack] Response data:', JSON.stringify(data, null, 2))
+
       // Map RouteStack response to our HotelOffer format
-      return (data.offers || []).map((offer: any) => ({
+      const offers = (data.offers || []).map((offer: any) => ({
         id: offer.id || `routestack-${Math.random().toString(36).substring(7)}`,
+        type: 'hotel',
         name: offer.name || offer.hotel_name || 'Unknown Hotel',
         location: request.destination || 'Unknown Location',
         stars: offer.star_rating || offer.stars || 3,
@@ -79,14 +96,19 @@ export class RouteStackProvider implements TravelProvider {
         image: offer.image_url || offer.main_image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
         price: {
           amount: Math.round(parseFloat(offer.price || offer.total_price || '0')),
-          currency: offer.currency || 'USD',
+          currency: offer.currency || 'EUR',
         },
         pricePerNight: Math.round(parseFloat(offer.price_per_night || offer.nightly_rate || '0')),
         roomType: offer.room_type || offer.room_name || 'Standard Room',
         amenities: offer.amenities || ['WiFi', 'Breakfast'],
         cancellation: offer.cancellation_policy || 'Free cancellation',
         recommendation: offer.description || `Located in ${request.destination}`,
+        provider: this.name,
       }))
+
+      console.log('[RouteStack] Mapped offers:', offers.length)
+
+      return offers
     } catch (error) {
       console.error('[RouteStack] Hotel search error:', error)
       throw error
