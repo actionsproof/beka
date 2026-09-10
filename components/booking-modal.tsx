@@ -259,7 +259,7 @@ export function BookingModal({ offer, onClose, onSuccess }: BookingModalProps) {
   const isFlight = offer.type === 'flight'
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 overflow-y-auto">
       <div className="relative w-full max-w-2xl my-8 rounded-3xl bg-card p-6 shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
